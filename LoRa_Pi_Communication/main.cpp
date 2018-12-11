@@ -2,6 +2,8 @@
 #include <wiringPiSPI.h>
 #include <iostream>
 
+using namespace std;
+
 // LED Pin - wiringPi pin 0 is BCM_GPIO 17.
 // we have to use BCM numbering when initializing with wiringPiSetupSys
 // when choosing a different pin number please use the BCM numbering, also
@@ -19,8 +21,10 @@ int main(void)
 	while (true)
 	{
 		digitalWrite(LED, HIGH);  // On
+		cout << "ON" << std::endl;
 		delay(500); // ms
 		digitalWrite(LED, LOW);	  // Off
+		cout << "OFF" << std::endl;
 		delay(500);
 		
 	}
