@@ -11,6 +11,7 @@
 int main(void)
 {
 	wiringPiSetupSys();
+	
 
 	pinMode(LED, OUTPUT);
 
