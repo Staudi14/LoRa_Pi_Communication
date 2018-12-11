@@ -1,4 +1,5 @@
 #include <wiringPi.h>
+#include <wiringPiSPI.h>
 
 // LED Pin - wiringPi pin 0 is BCM_GPIO 17.
 // we have to use BCM numbering when initializing with wiringPiSetupSys
@@ -19,6 +20,7 @@ int main(void)
 		delay(500); // ms
 		digitalWrite(LED, LOW);	  // Off
 		delay(500);
+		
 	}
 	return 0;
 }
