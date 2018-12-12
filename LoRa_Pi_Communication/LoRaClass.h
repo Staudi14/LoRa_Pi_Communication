@@ -1,10 +1,9 @@
 #pragma once
-
-#include <iostream>
+/*
+This Programm uses the BCM pin numbering for the Raspberry Pi
+*/
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-
-using namespace std;
 
 #define LORA_DEFAULT_SPI			0
 #define LORA_DEFAULT_SPI_FREQUENCY	8E6 
@@ -87,9 +86,9 @@ private:
 
 	void setLdoFlag();
 
-	uint8_t readRegister(uint8_t address);
-	void writeRegister(uint8_t address, uint8_t value);
-	uint8_t singleTransfer(uint8_t address, uint8_t value);
+	unsigned char readRegister(unsigned char address);
+	void writeRegister(unsigned char address, unsigned char value);
+	unsigned char singleTransfer(unsigned char address, unsigned char value);
 
 	static void onDio0Rise();
 
