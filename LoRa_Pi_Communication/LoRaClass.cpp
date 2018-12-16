@@ -1,7 +1,4 @@
 #include "LoRaClass.h"
-#include <iostream>
-
-using namespace std;
 
 //misc
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
@@ -72,7 +69,13 @@ LoRaClass::LoRaClass()
 	_spiFrequency = LORA_DEFAULT_SPI_FREQUENCY;
 	_spiPort = LORA_DEFAULT_SPI;
 
-	wiringPiSetupGpio();
+	if (wiringPiSetupGpio())
+	{
+		cout << "Failed to setup GPIO" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	cout << "GPIO setup completed" << endl;
 
 	setPins(LORA_DEFAULT_SS_PIN, LORA_DEFAULT_RESET_PIN, LORA_DEFAULT_DIO0_PIN);
 
@@ -88,7 +91,12 @@ LoRaClass::LoRaClass()
 	delay(10);
 
 	//SPI
-	wiringPiSPISetup(LORA_DEFAULT_SPI, LORA_DEFAULT_SPI_FREQUENCY);			//SPI Mode 0
+	if (wiringPiSPISetup(LORA_DEFAULT_SPI, LORA_DEFAULT_SPI_FREQUENCY) == -1)			//SPI Mode 0
+	{
+		cout << "SPI couldn't be configured" << endl;
+		exit(EXIT_FAILURE);
+	}
+				
 
 	//Version check
 	version = readRegister(REG_VERSION);								//If version doesn't match terminate the programm and print out an error
@@ -126,7 +134,7 @@ LoRaClass::~LoRaClass()
 	sleep();
 }
 
-LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
+/*LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
 {
 	char version;
 
@@ -181,7 +189,7 @@ LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long 
 
 	// put in standby mode
 	idle();
-}
+}*/
 
 int LoRaClass::beginPacket(int implicitHeader)
 {
@@ -240,10 +248,10 @@ bool LoRaClass::isTransmitting()
 	return false;
 }
 
-int LoRaClass::parsePacket(int size)
+int LoRaClass::parsePacket(uint8_t size)
 {
 	int packetLength = 0;
-	int irqFlags = readRegister(REG_IRQ_FLAGS);
+	uint8_t irqFlags = readRegister(REG_IRQ_FLAGS);
 
 	if (size > 0) {
 		implicitHeaderMode();
@@ -295,19 +303,19 @@ int LoRaClass::packetRssi()
 
 float LoRaClass::packetSnr()
 {
-	return ((unsigned char)readRegister(REG_PKT_SNR_VALUE)) * 0.25;
+	return ((unsigned char)readRegister(REG_PKT_SNR_VALUE)) * 0.25f;
 }
 
 long LoRaClass::packetFrequencyError()
 {
 	int32_t freqError = 0;
-	freqError = static_cast<int32_t>(readRegister(REG_FREQ_ERROR_MSB) & B111);
+	freqError = static_cast<int32_t>(readRegister(REG_FREQ_ERROR_MSB) & 0xB111);
 	freqError <<= 8L;
 	freqError += static_cast<int32_t>(readRegister(REG_FREQ_ERROR_MID));
 	freqError <<= 8L;
 	freqError += static_cast<int32_t>(readRegister(REG_FREQ_ERROR_LSB));
 
-	if (readRegister(REG_FREQ_ERROR_MSB) & B1000) { // Sign bit is on
+	if (readRegister(REG_FREQ_ERROR_MSB) & 0xB1000) { // Sign bit is on
 		freqError -= 524288; // B1000'0000'0000'0000'0000
 	}
 
@@ -324,7 +332,7 @@ size_t LoRaClass::write(uint8_t byte)
 
 size_t LoRaClass::write(const uint8_t *buffer, size_t size)
 {
-	int currentLength = readRegister(REG_PAYLOAD_LENGTH);
+	char currentLength = readRegister(REG_PAYLOAD_LENGTH);
 
 	// check size
 	if ((currentLength + size) > MAX_PKT_LENGTH) {
@@ -727,12 +735,11 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 {
 	uint8_t response;
 
+	unsigned char buffer[2] = { address,value };
+
 	digitalWrite(_ss, LOW);
 
-	_spi->beginTransaction(_spiSettings);
-	_spi->transfer(address);
-	response = _spi->transfer(value);
-	_spi->endTransaction();
+	response = wiringPiSPIDataRW(_spiPort, buffer, 2);
 
 	digitalWrite(_ss, HIGH);
 

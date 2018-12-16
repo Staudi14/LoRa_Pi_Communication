@@ -4,6 +4,12 @@ This Programm uses the BCM pin numbering for the Raspberry Pi
 */
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
+#include <iostream>
+
+using namespace std;
+
+//#define DUMPREG										//activates not functioning methode dumpRegesiters
+#define WIRINGPI_CODES									//Setup outputs error message
 
 #define LORA_DEFAULT_SPI			0
 #define LORA_DEFAULT_SPI_FREQUENCY	8E6 
@@ -24,21 +30,21 @@ public:
 	LoRaClass();
 	~LoRaClass();
 
-	LoRaClass(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN, 
+	/*LoRaClass(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN, 
 		long frequency = LORA_DEFAULT_FREQUENCY, int spi = LORA_DEFAULT_SPI, long spi_frequency = LORA_DEFAULT_SPI_FREQUENCY, 
-		int power = LORA_DEFAULT_POWER);
+		int power = LORA_DEFAULT_POWER);*/
 
 	int beginPacket(int implicitHeader = false);
 	int endPacket(bool async = false);
 
-	int parsePacket(int size = 0);
+	int parsePacket(uint8_t size = 0);
 	int packetRssi();
 	float packetSnr();
 	long packetFrequencyError();
 
 	
-	virtual size_t write(unsigned int byte);
-	virtual size_t write(const unsigned int *buffer, int size);
+	virtual size_t write(uint8_t byte);
+	virtual size_t write(const uint8_t *buffer, size_t size);
 
 	virtual int available();
 	virtual int read();
@@ -64,15 +70,16 @@ public:
 	void enableInvertIQ();
 	void disableInvertIQ();
 
-	void setOCP(int mA); // Over Current Protection control
+	void setOCP(uint8_t mA); // Over Current Protection control
 
 	char random();
 
 	void setPins(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN);
-	void setSPI(SPIClass& spi);
-	void setSPIFrequency(int frequency);
+	void setSPIFrequency(uint32_t frequency);
 
+#ifdef DUMPREG
 	void dumpRegisters(Stream& out);
+#endif
 
 private:
 	void explicitHeaderMode();
@@ -86,9 +93,9 @@ private:
 
 	void setLdoFlag();
 
-	unsigned char readRegister(unsigned char address);
-	void writeRegister(unsigned char address, unsigned char value);
-	unsigned char singleTransfer(unsigned char address, unsigned char value);
+	uint8_t readRegister(uint8_t address);
+	void writeRegister(uint8_t address, uint8_t value);
+	uint8_t singleTransfer(uint8_t address, uint8_t value);
 
 	static void onDio0Rise();
 
@@ -100,5 +107,11 @@ private:
 	int _packetIndex;
 	int _implicitHeaderMode;
 	void(*_onReceive)(int);
+
+	bool _interruptState;
+	int _spiFrequency;
+	int _spiPort;
 };
+
+extern LoRaClass LoRa;
 
