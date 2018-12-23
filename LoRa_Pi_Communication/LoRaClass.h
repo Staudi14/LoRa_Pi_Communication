@@ -30,8 +30,9 @@ class LoRaClass
 public:
 	/*
 	LoRaClass();
-	~LoRaClass();
 	*/
+	~LoRaClass();
+	
 	void begin(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN,
 		long frequency = LORA_DEFAULT_FREQUENCY, int spi = LORA_DEFAULT_SPI, long spi_frequency = LORA_DEFAULT_SPI_FREQUENCY,
 		int power = LORA_DEFAULT_POWER);
@@ -44,7 +45,7 @@ public:
 
 	int beginPacket(int implicitHeader = false);
 	int endPacket(bool async = false);
-	void print(std::ostream & input);
+	void print(std::string & input);
 
 	int parsePacket(uint8_t size = 0);
 	int packetRssi();

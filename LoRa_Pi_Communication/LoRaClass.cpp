@@ -128,12 +128,17 @@ LoRaClass::LoRaClass()
 	// put in standby mode
 	idle();
 }
-
+*/
 LoRaClass::~LoRaClass()
 {
 	sleep();
+	char buffer[33];
+
+	sprintf(buffer, "/usr/local/bin/gpio edge %x none", _dio0);
+
+	system(buffer);
 }
-*/
+
 /*LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
 {
 	char version;
@@ -813,14 +818,12 @@ void LoRaClass::onDio0Rise()
   LoRa.handleDio0Rise();
 }
 
-void LoRaClass::print(std::ostream &input)
+void LoRaClass::print(std::string &input)
 {
-	std::stringstream ss;
-	ss << input.rdbuf();
-	std::string stri = ss.str();
-	const char *in = stri.c_str();
+	
+	const char *in = input.c_str();
 
-	for (int i = 0; i < (stri.length() +1); i++)
+	for (int i = 0; i < (input.length() +1); i++)
 	{
 		write(in[i]);
 	}
