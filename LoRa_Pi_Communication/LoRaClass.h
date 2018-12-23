@@ -5,6 +5,7 @@ This Programm uses the BCM pin numbering for the Raspberry Pi
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -27,8 +28,15 @@ using namespace std;
 class LoRaClass
 {
 public:
+	/*
 	LoRaClass();
 	~LoRaClass();
+	*/
+	void begin(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN,
+		long frequency = LORA_DEFAULT_FREQUENCY, int spi = LORA_DEFAULT_SPI, long spi_frequency = LORA_DEFAULT_SPI_FREQUENCY,
+		int power = LORA_DEFAULT_POWER);
+
+	void end();
 
 	/*LoRaClass(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN, 
 		long frequency = LORA_DEFAULT_FREQUENCY, int spi = LORA_DEFAULT_SPI, long spi_frequency = LORA_DEFAULT_SPI_FREQUENCY, 
@@ -36,6 +44,7 @@ public:
 
 	int beginPacket(int implicitHeader = false);
 	int endPacket(bool async = false);
+	void print(std::ostream & input);
 
 	int parsePacket(uint8_t size = 0);
 	int packetRssi();

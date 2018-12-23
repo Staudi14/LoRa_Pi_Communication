@@ -60,7 +60,7 @@
 
 #define MAX_PKT_LENGTH           255
 
-
+/*
 LoRaClass::LoRaClass()
 {
 	char version;
@@ -133,7 +133,7 @@ LoRaClass::~LoRaClass()
 {
 	sleep();
 }
-
+*/
 /*LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
 {
 	char version;
@@ -190,6 +190,68 @@ LoRaClass::~LoRaClass()
 	// put in standby mode
 	idle();
 }*/
+
+void LoRaClass::begin(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
+{
+	char version;
+
+	_interruptState = false;
+	_spiFrequency = spi_frequency;
+	_spiPort = spi;
+
+	wiringPiSetupGpio();
+
+	setPins(ss, reset, dio0);
+
+	//Setup SS Pin
+	pinMode(ss, OUTPUT);
+	digitalWrite(ss, HIGH);
+
+	//Reset module
+	pinMode(reset, OUTPUT);
+	digitalWrite(reset, LOW);
+	delay(10);
+	digitalWrite(reset, HIGH);
+	delay(10);
+
+	//SPI
+	wiringPiSPISetup(spi, spi_frequency);			//SPI Mode 0
+
+	//Version check
+	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
+	if (version != 0x12)
+	{
+		cout << "Wrong module version!!" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	//put in sleep mode
+	sleep();
+
+	//set frequency
+	setFrequency(frequency);
+
+	//set base addresses
+	writeRegister(REG_FIFO_TX_BASE_ADDR, 0);
+	writeRegister(REG_FIFO_RX_BASE_ADDR, 0);
+
+	// set LNA boost
+	writeRegister(REG_LNA, readRegister(REG_LNA) | 0x03);
+
+	// set auto AGC
+	writeRegister(REG_MODEM_CONFIG_3, 0x04);
+
+	// set output power
+	setTxPower(power);
+
+	// put in standby mode
+	idle();
+}
+
+void LoRaClass::end()
+{
+	sleep();
+}
 
 int LoRaClass::beginPacket(int implicitHeader)
 {
@@ -743,12 +805,25 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 
 	digitalWrite(_ss, HIGH);
 
-	return response;
+	return buffer[1];
 }
 
 void LoRaClass::onDio0Rise()
 {
   LoRa.handleDio0Rise();
+}
+
+void LoRaClass::print(std::ostream &input)
+{
+	std::stringstream ss;
+	ss << input.rdbuf();
+	std::string stri = ss.str();
+	const char *in = stri.c_str();
+
+	for (int i = 0; i < (stri.length() +1); i++)
+	{
+		write(in[i]);
+	}
 }
 
 LoRaClass LoRa;
