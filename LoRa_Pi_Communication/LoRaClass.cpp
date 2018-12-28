@@ -274,6 +274,15 @@ int LoRaClass::beginPacket(int implicitHeader)
 		return 0;
 	}
 
+	if (_interruptState == true)
+	{
+		char buffer[33];
+
+		sprintf(buffer, "/usr/local/bin/gpio edge %x none", _dio0);
+
+		system(buffer);
+	}
+
 	// put in standby mode
 	idle();
 
@@ -306,6 +315,11 @@ int LoRaClass::endPacket(bool async)
 
 		// clear IRQ's
 		writeRegister(REG_IRQ_FLAGS, IRQ_TX_DONE_MASK);
+	}
+
+	if (_interruptState == true) 
+	{
+		wiringPiISR(_dio0, INT_EDGE_RISING, LoRaClass::onDio0Rise);
 	}
 
 	return 1;
@@ -836,6 +850,14 @@ void LoRaClass::print(std::string &input)
 	for (int i = 0; i < (input.length() +1); i++)
 	{
 		write(in[i]);
+	}
+}
+
+void LoRaClass::setSPIPort(unsigned int port)
+{
+	if (port < 2)
+	{
+		_spiPort = port;
 	}
 }
 
