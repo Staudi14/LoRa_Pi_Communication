@@ -129,6 +129,18 @@ LoRaClass::LoRaClass()
 	idle();
 }
 */
+
+LoRaClass::LoRaClass() 
+{
+	_ss = LORA_DEFAULT_SS_PIN;
+	_reset = LORA_DEFAULT_RESET_PIN;
+	_dio0 = LORA_DEFAULT_DIO0_PIN;
+	_frequency = LORA_DEFAULT_FREQUENCY;
+	_spiFrequency = LORA_DEFAULT_SPI_FREQUENCY;
+	_spiPort = LORA_DEFAULT_SPI;
+	_power = LORA_DEFAULT_POWER;
+}
+
 LoRaClass::~LoRaClass()
 {
 	sleep();
@@ -196,31 +208,29 @@ LoRaClass::~LoRaClass()
 	idle();
 }*/
 
-void LoRaClass::begin(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
+void LoRaClass::begin()
 {
 	char version;
 
 	_interruptState = false;
-	_spiFrequency = spi_frequency;
-	_spiPort = spi;
+	_spiFrequency = _spiFrequency;
+	_spiPort = _spiPort;
 
 	wiringPiSetupGpio();
 
-	setPins(ss, reset, dio0);
-
 	//Setup SS Pin
-	pinMode(ss, OUTPUT);
-	digitalWrite(ss, HIGH);
+	pinMode(_ss, OUTPUT);
+	digitalWrite(_ss, HIGH);
 
 	//Reset module
-	pinMode(reset, OUTPUT);
-	digitalWrite(reset, LOW);
+	pinMode(_reset, OUTPUT);
+	digitalWrite(_reset, LOW);
 	delay(10);
-	digitalWrite(reset, HIGH);
+	digitalWrite(_reset, HIGH);
 	delay(10);
 
 	//SPI
-	wiringPiSPISetup(spi, spi_frequency);			//SPI Mode 0
+	wiringPiSPISetup(_spiPort, _spiFrequency);			//SPI Mode 0
 
 	//Version check
 	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
@@ -234,7 +244,7 @@ void LoRaClass::begin(int ss, int reset, int dio0, long frequency, int spi, long
 	sleep();
 
 	//set frequency
-	setFrequency(frequency);
+	setFrequency(_frequency);
 
 	//set base addresses
 	writeRegister(REG_FIFO_TX_BASE_ADDR, 0);
@@ -247,7 +257,7 @@ void LoRaClass::begin(int ss, int reset, int dio0, long frequency, int spi, long
 	writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
 	// set output power
-	setTxPower(power);
+	setTxPower(_power);
 
 	// put in standby mode
 	idle();

@@ -28,14 +28,12 @@ using namespace std;
 class LoRaClass
 {
 public:
-	/*
+	
 	LoRaClass();
-	*/
+	
 	~LoRaClass();
 	
-	void begin(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN,
-		long frequency = LORA_DEFAULT_FREQUENCY, int spi = LORA_DEFAULT_SPI, long spi_frequency = LORA_DEFAULT_SPI_FREQUENCY,
-		int power = LORA_DEFAULT_POWER);
+	void begin();
 
 	void end();
 
@@ -84,7 +82,7 @@ public:
 
 	char random();
 
-	void setPins(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN);
+	void setPins(int ss, int reset, int dio0);
 	void setSPIFrequency(uint32_t frequency);
 
 #ifdef DUMPREG
@@ -121,6 +119,7 @@ private:
 	bool _interruptState;
 	int _spiFrequency;
 	int _spiPort;
+	int _power
 };
 
 extern LoRaClass LoRa;
