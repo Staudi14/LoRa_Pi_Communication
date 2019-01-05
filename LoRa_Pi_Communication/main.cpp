@@ -4,7 +4,7 @@
 #include "LoRaClass.h"
 #include "rapidjson/document.h"
 
-#define CONFIG_PATH "/usr/bin/lora/config.json"
+#define CONFIG_PATH "/home/pi/lora/config.json"
 
 
 using namespace std;
@@ -18,7 +18,7 @@ int main(void)
 	fconfig.open(CONFIG_PATH, ios::in);
 
 	if (fconfig.is_open()) {
-		fconfig >> config;
+		config.assign(istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
 		cout << config << endl;
 	}
 
@@ -28,5 +28,7 @@ int main(void)
 	LoRa.begin();	
 
 	LoRa.end();
+	string i;
+	cin >> i;
 	return 0;
 }
