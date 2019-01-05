@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include "LoRaClass.h"
 #include "JSON.h"
@@ -22,7 +21,7 @@ int main(void)
 
 	}
 	else {
-		cout << "config.json nicht an angegeben Pfad" << endl;
+		cout << "config.json could not be found." << endl;
 	}
 	
 	

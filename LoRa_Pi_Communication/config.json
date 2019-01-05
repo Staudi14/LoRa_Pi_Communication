@@ -1,4 +1,5 @@
 {
+    
     "spi": 0,
     "spi_frequency": 8e+6,
     "ss_pin": 22,

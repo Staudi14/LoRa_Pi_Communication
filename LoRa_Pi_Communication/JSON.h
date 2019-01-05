@@ -16,6 +16,9 @@ private:
 	string config;
 	string path;
 
+private:
+	void commentRemover();
+
 public:
 	bool setPath(string fpath);
 	bool setPath(const char *fpath);
