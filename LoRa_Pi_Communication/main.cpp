@@ -4,7 +4,7 @@
 #include "LoRaClass.h"
 #include "rapidjson/document.h"
 
-#define CONFIG_PATH "/home/pi/lora/config.json"
+#define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/config.json"
 
 
 using namespace std;
