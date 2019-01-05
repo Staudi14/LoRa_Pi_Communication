@@ -1,37 +1,31 @@
+#include <iostream>
+#include <fstream>
+#include <string>
 #include "LoRaClass.h"
+#include "rapidjson/document.h"
+
+#define CONFIG_PATH "/usr/bin/lora/config.json"
+
 
 using namespace std;
 
 
 int main(void)
 {
-	int counter;
-	string s = "Hello World";
+	string config;
+	//Reading in the config File
+	fstream fconfig;
+	fconfig.open(CONFIG_PATH, ios::in);
 
-	//LoRa.setSPIFrequency(1E6);
-	LoRa.begin();
-
-	cout << "Waiting on Data" << endl;
-
-	
-
-	while (true)
-	{
-		cout << ("Sending packet: ");
-		cout << (counter)<<endl;
-
-		cout << s <<endl;
-
-		// send packet
-		LoRa.beginPacket();
-		LoRa.print(s);
-		LoRa.endPacket();
-
-		counter++;
-
-		delay(500);
-		
+	if (fconfig.is_open()) {
+		fconfig >> config;
+		cout << config << endl;
 	}
+
+
+
+
+	LoRa.begin();	
 
 	LoRa.end();
 	return 0;

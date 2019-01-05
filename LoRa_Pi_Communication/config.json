@@ -1,0 +1,11 @@
+{
+    "spi": 0,
+    "spi_frequency": 8e+6,
+    "ss_pin": 22,
+    "reset_pin": 27,
+    "dio0_pin": 17,
+    "frequency": 868e+6,
+    "power": 17,
+    "rfo_pin": 0,
+    "pa_boost_pin": 5
+}

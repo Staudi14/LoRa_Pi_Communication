@@ -266,6 +266,11 @@ void LoRaClass::begin()
 void LoRaClass::end()
 {
 	sleep();
+	char buffer[33];
+
+	sprintf(buffer, "/usr/local/bin/gpio edge %x none", _dio0);
+
+	system(buffer);
 }
 
 int LoRaClass::beginPacket(int implicitHeader)
@@ -847,7 +852,7 @@ void LoRaClass::print(std::string &input)
 	
 	const char *in = input.c_str();
 
-	for (int i = 0; i < (input.length() +1); i++)
+	for (unsigned int i = 0; i < (input.length() +1); i++)
 	{
 		write(in[i]);
 	}

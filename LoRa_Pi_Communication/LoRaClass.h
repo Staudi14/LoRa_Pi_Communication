@@ -10,6 +10,7 @@ This Programm uses the BCM pin numbering for the Raspberry Pi
 using namespace std;
 
 //#define DUMPREG										//activates not functioning methode dumpRegesiters
+
 #define WIRINGPI_CODES									//Setup outputs error message
 
 #define LORA_DEFAULT_SPI			0
@@ -120,7 +121,7 @@ private:
 	bool _interruptState;
 	int _spiFrequency;
 	int _spiPort;
-	int _power
+	int _power;
 };
 
 extern LoRaClass LoRa;
