@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 #include "LoRaClass.h"
-#include "rapidjson/document.h"
+#include "JSON.h"
+
+
 
 #define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/config.json"
 
@@ -12,15 +14,18 @@ using namespace std;
 
 int main(void)
 {
-	string config;
-	//Reading in the config File
-	fstream fconfig;
-	fconfig.open(CONFIG_PATH, ios::in);
+	JSON config;
 
-	if (fconfig.is_open()) {
-		config.assign(istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
-		cout << config << endl;
+	if (config.setPath(CONFIG_PATH)) {
+		cout << config.getConfig() << endl;
+
+
 	}
+	else {
+		cout << "config.json nicht an angegeben Pfad" << endl;
+	}
+	
+	
 
 
 
