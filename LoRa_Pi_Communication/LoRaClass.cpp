@@ -257,7 +257,7 @@ void LoRaClass::begin()
 	writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
 	// set output power
-	setTxPower(_power);
+	setTxPower(_power, _pa_rfo_pin);
 
 	// put in standby mode
 	idle();
@@ -537,6 +537,9 @@ void LoRaClass::sleep()
 
 void LoRaClass::setTxPower(int level, int outputPin)
 {
+	_power = level;
+	_pa_rfo_pin = outputPin;
+
 	if (PA_OUTPUT_RFO_PIN == outputPin) {
 		// RFO
 		if (level < 0) {
