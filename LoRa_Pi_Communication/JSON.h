@@ -30,7 +30,7 @@ public:
 	bool open(const char *fpath);
 
 	string getConfig();
-	
+
 	int getSPI();
 	long int getSPI_frequency();
 	int getSS_pin();
@@ -41,7 +41,7 @@ public:
 	int getRFO_pin();
 	int getPAboostPin();
 	std::string getMode();
-	
+
 
 };
 

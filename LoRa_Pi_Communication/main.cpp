@@ -19,6 +19,7 @@ int main(void)
 		cout << "config.json could not be found." << endl;
 		exit(EXIT_FAILURE);
 	}
+
 	/*
 	//Testing JSON.h
 	cout << "spi: " << config.getSPI() << endl;
@@ -35,7 +36,7 @@ int main(void)
 
 
 
-	LoRa.begin();	
+	LoRa.begin();
 
 	LoRa.end();
 	string i;

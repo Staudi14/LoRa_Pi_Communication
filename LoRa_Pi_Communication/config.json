@@ -1,18 +1,32 @@
 {
-    
+    //Select used SPI Interface on Raspberry Pi
+    //For more information look at "https://github.com/Staudi14/LoRa_Pi_Communication/wiki/Documentation-LoRaClass#setspiportport"
     "spi": 0,
+
+    //Select SPI frequency.
+    //Default Frequency is 8MHz
     "spi_frequency": 8000000,
+
+    //Select transmission and receive frequency. To see which frequencies are supported by your module check the datasheet.
+    "frequency": 868000000,
+
+    //Select the Pin's to connect the module to
+    //rfo_pin and pa_boost_pin aren't used per default
+    //This file uses the BCM numbering
     "ss_pin": 22,
     "reset_pin": 27,
-    "dio0_pin": 17,
-    "frequency": 868000000,
-    "power": 17,
+    "dio0_pin": 17,    
     "rfo_pin": 0,
     "pa_boost_pin": 5,
 
-    
-    //rx ... only receive
-    //tx ... only send
-    //rxtx ... send and receive
-    "mode":"rxtx"
+
+    //Set output power
+    //The values from 0 ... 14 represents a TX power from -1dBm to 13dBm
+    "power": 14,
+
+    //Select mode of operation
+    //r ... only receive
+    //w ... only send
+    //rw ... send and receive
+    "mode":"rw"
 }

@@ -18,7 +18,7 @@ void JSON::commentRemover()
 	std::string newString;
 
 	sprintf(iter, "%s", config.c_str());
-	
+
 	for (unsigned int i = 0; i < config.length() - 1; i++) {
 		if (iter[i] == '/' && iter[i + 1] == '/') {
 			copy = false;
@@ -31,7 +31,7 @@ void JSON::commentRemover()
 		}
 
 		if (copy) {
-			newString.append(1,iter[i]);
+			newString.append(1, iter[i]);
 		}
 	}
 
@@ -95,7 +95,7 @@ bool JSON::open(const char * fpath)
 	else {
 		return false;
 	}
-	
+
 }
 
 string JSON::getConfig()
@@ -114,7 +114,7 @@ string JSON::getConfig()
 
 		conf.Parse(config.c_str());
 
-		
+
 		return string(config);
 	}
 	else
@@ -127,22 +127,22 @@ int JSON::getSPI()
 {
 	if (conf.HasMember("spi"))
 	{
-		if (conf["spi"].IsInt()) 
+		if (conf["spi"].IsInt())
 		{
 			return conf["spi"].GetInt();
 		}
-		else 
+		else
 		{
 			cout << "spi is not int" << endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
-	else 
+	else
 	{
 		cout << "spi setting is missing" << endl;
 		exit(EXIT_FAILURE);
-		
+
 	}
 	return 0;
 }
