@@ -67,7 +67,7 @@ public:
 	void idle();
 	void sleep();
 
-	void setTxPower(int level, int outputPin = PA_OUTPUT_PA_BOOST_PIN);
+	void setTxPower(int level, int outputPin);
 	void setFrequency(long frequency);
 	void setSpreadingFactor(int sf);
 	void setSignalBandwidth(long sbw);
@@ -122,6 +122,7 @@ private:
 	int _spiFrequency;
 	int _spiPort;
 	int _power;
+	int _pa_rfo_pin;
 };
 
 extern LoRaClass LoRa;
