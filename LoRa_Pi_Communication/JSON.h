@@ -2,9 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include "rapidjson/document.h"
+#include "LoRaClass.h"
 
-using namespace std;
-using namespace rapidjson;
+
+
 
 class JSON
 {
@@ -13,18 +14,33 @@ public:
 	~JSON();
 
 private:
-	string config;
-	string path;
+	std::string config;
+	std::string path;
+	rapidjson::Document conf;
 
 private:
 	void commentRemover();
 
+
 public:
-	bool setPath(string fpath);
+	bool setPath(std::string fpath);
 	bool setPath(const char *fpath);
 
-	string getConfig();
+	bool open(std::string fpath);
+	bool open(const char *fpath);
 
+	string getConfig();
+	
+	int getSPI();
+	long int getSPI_frequency();
+	int getSS_pin();
+	int getResetPin();
+	int getDIO0_pin();
+	long int getFrequency();
+	int getPower();
+	int getRFO_pin();
+	int getPAboostPin();
+	std::string getMode();
 	
 
 };

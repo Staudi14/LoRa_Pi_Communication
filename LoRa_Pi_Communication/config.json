@@ -1,12 +1,18 @@
 {
     
     "spi": 0,
-    "spi_frequency": 8e+6,
+    "spi_frequency": 8000000,
     "ss_pin": 22,
     "reset_pin": 27,
     "dio0_pin": 17,
-    "frequency": 868e+6,
+    "frequency": 868000000,
     "power": 17,
     "rfo_pin": 0,
-    "pa_boost_pin": 5
+    "pa_boost_pin": 5,
+
+    
+    //rx ... only receive
+    //tx ... only send
+    //rxtx ... send and receive
+    "mode":"rxtx"
 }

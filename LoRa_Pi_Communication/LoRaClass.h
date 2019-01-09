@@ -62,7 +62,7 @@ public:
 
 	void onReceive(void(*callback)(int));
 
-	void receive(int size = 0);
+	void receive(size_t size = 0);
 
 	void idle();
 	void sleep();

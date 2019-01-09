@@ -416,7 +416,7 @@ long LoRaClass::packetFrequencyError()
 	}
 
 	const float fXtal = 32E6; // FXOSC: crystal oscillator (XTAL) frequency (2.5. Chip Specification, p. 14)
-	const float fError = ((static_cast<float>(freqError) * (1L << 24)) / fXtal) * (getSignalBandwidth() / 500000.0f); // p. 37
+	const float fError = (float)(((float)freqError * (float)(1L << 24)) / (float)fXtal) * (float)(getSignalBandwidth() / 500000.0f); // p. 37
 
 	return static_cast<long>(fError);
 }
@@ -469,7 +469,7 @@ int LoRaClass::peek()
 	}
 
 	// store current FIFO address
-	int currentAddress = readRegister(REG_FIFO_ADDR_PTR);
+	uint8_t currentAddress = readRegister(REG_FIFO_ADDR_PTR);
 
 	// read
 	uint8_t b = readRegister(REG_FIFO);
@@ -511,7 +511,7 @@ void LoRaClass::onReceive(void(*callback)(int))									//callback wird im handl
 
 }
 
-void LoRaClass::receive(int size)
+void LoRaClass::receive(size_t size)
 {
 	if (size > 0) {
 		implicitHeaderMode();
@@ -829,13 +829,11 @@ void LoRaClass::writeRegister(uint8_t address, uint8_t value)
 
 uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 {
-	uint8_t response;
-
 	unsigned char buffer[2] = { address,value };
 
 	digitalWrite(_ss, LOW);
 
-	response = wiringPiSPIDataRW(_spiPort, buffer, 2);
+	wiringPiSPIDataRW(_spiPort, buffer, 2);
 
 	digitalWrite(_ss, HIGH);
 

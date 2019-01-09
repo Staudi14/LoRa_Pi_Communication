@@ -15,17 +15,23 @@ int main(void)
 {
 	JSON config;
 
-	if (config.setPath(CONFIG_PATH)) {
-		cout << config.getConfig() << endl;
-
-
-	}
-	else {
+	if (!config.open(CONFIG_PATH)) {
 		cout << "config.json could not be found." << endl;
+		exit(EXIT_FAILURE);
 	}
-	
-	
-
+	/*
+	//Testing JSON.h
+	cout << "spi: " << config.getSPI() << endl;
+	cout << "spi_frequency: " << config.getSPI_frequency() << endl;
+	cout << "ss_pin: " << config.getSS_pin() << endl;
+	cout << "reset_pin: " << config.getResetPin() << endl;
+	cout << "dio0_pin: " << config.getDIO0_pin() << endl;
+	cout << "frequency: " << config.getFrequency() << endl;
+	cout << "power: " << config.getPower() << endl;
+	cout << "rfo_pin: " << config.getRFO_pin() << endl;
+	cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
+	cout << "mode: " << config.getMode() << endl;
+	*/
 
 
 
