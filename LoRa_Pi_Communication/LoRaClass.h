@@ -44,7 +44,7 @@ public:
 
 	int beginPacket(int implicitHeader = false);
 	int endPacket(bool async = false);
-	void print(std::string & input);
+	void print(std::string input);
 
 	int parsePacket(uint8_t size = 0);
 	int packetRssi();

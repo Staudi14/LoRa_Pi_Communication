@@ -848,7 +848,7 @@ void LoRaClass::onDio0Rise()
   LoRa.handleDio0Rise();
 }
 
-void LoRaClass::print(std::string &input)
+void LoRaClass::print(std::string input)
 {
 	
 	const char *in = input.c_str();

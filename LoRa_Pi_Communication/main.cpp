@@ -10,19 +10,6 @@
 
 using namespace std;
 
-void onReceive(int packetSize) {
-	// received a packet
-	cout << ("Received packet '");
-
-	// read packet
-	for (int i = 0; i < packetSize; i++) {
-		cout << ((char)LoRa.read());
-	}
-
-	// print RSSI of packet
-	cout << ("' with RSSI ");
-	cout << LoRa.packetRssi() << endl;
-}
 
 int main(void)
 {
@@ -63,10 +50,29 @@ int main(void)
 	//Begin LoRa
 	LoRa.begin();
 
-	LoRa.onReceive(onReceive);
-	LoRa.receive();
+	int counter;
+	string buffer;
 
-	while (true);
+	
+
+	while (true) 
+	{
+		
+
+		// send packet
+		buffer.append("Hello World ");
+		buffer.append(to_string(counter));
+
+		cout << buffer << endl;
+
+		LoRa.beginPacket();
+		LoRa.print(buffer);
+		LoRa.endPacket();
+
+		counter++;
+		buffer.clear();
+		delay(5000);
+	}
 
 	LoRa.end();
 	string i;
