@@ -22,8 +22,8 @@ using namespace std;
 #define LORA_DEFAULT_FREQUENCY		868e6
 #define LORA_DEFAULT_POWER			17					//17dBm
 
-#define PA_OUTPUT_RFO_PIN			0
-#define PA_OUTPUT_PA_BOOST_PIN		5
+#define PA_OUTPUT_RFO_PIN			0					//represents false
+#define PA_OUTPUT_PA_BOOST_PIN		1					//represents true
 
 
 class LoRaClass
@@ -68,6 +68,7 @@ public:
 	void sleep();
 
 	void setTxPower(int level, int outputPin);
+	void setTxPower(int level);
 	void setFrequency(long frequency);
 	void setSpreadingFactor(int sf);
 	void setSignalBandwidth(long sbw);

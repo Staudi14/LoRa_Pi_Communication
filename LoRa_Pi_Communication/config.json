@@ -15,18 +15,22 @@
     //This file uses the BCM numbering
     "ss_pin": 22,
     "reset_pin": 27,
-    "dio0_pin": 17,    
+    "dio0_pin": 17,
     "rfo_pin": 0,
-    "pa_boost_pin": 5,
+
+    //Output of SX127x chip set
+    //true -> outputs on PA_BOOST_PIN
+    //False -> outputs on PA_LF or PA_HF depending on frequency used.
+    "pa_boost_pin": true,
 
 
     //Set output power
-    //The values from 0 ... 14 represents a TX power from -1dBm to 13dBm
-    "power": 14,
+    //The values from 0 ... 20 represents a TX power from -3dBm to 17dBm
+    "power": 15,
 
     //Select mode of operation
     //r ... only receive
     //w ... only send
     //rw ... send and receive
-    "mode":"rw"
+    "mode": "rw"
 }

@@ -293,15 +293,16 @@ int JSON::getPower()
 
 int JSON::getRFO_pin()
 {
+	bool tmp;
 	if (conf.HasMember("rfo_pin"))
 	{
-		if (conf["rfo_pin"].IsInt())
+		if (conf["rfo_pin"].IsBool())
 		{
-			return conf["rfo_pin"].GetInt();
+			return (conf["rfo_pin"].GetBool()? 1 : 0);
 		}
 		else
 		{
-			cout << "rfo_pin is not int" << endl;
+			cout << "rfo_pin is not bool" << endl;
 			exit(EXIT_FAILURE);
 		}
 
