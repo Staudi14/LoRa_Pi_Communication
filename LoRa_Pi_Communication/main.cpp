@@ -20,7 +20,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/*
+/*
 	//Testing JSON.h
 	cout << "spi: " << config.getSPI() << endl;
 	cout << "spi_frequency: " << config.getSPI_frequency() << endl;
@@ -32,7 +32,7 @@ int main(void)
 	cout << "rfo_pin: " << config.getRFO_pin() << endl;
 	cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
 	cout << "mode: " << config.getMode() << endl;
-	*/
+*/	
 
 	//Setting up SPI
 	LoRa.setSPIPort(config.getSPI());
@@ -45,7 +45,7 @@ int main(void)
 	LoRa.setPins(config.getSS_pin(), config.getResetPin(), config.getDIO0_pin());
 
 	//Set Tx power and RFO pin
-	LoRa.setTxPower(config.getPower(), config.getRFO_pin());
+	LoRa.setTxPower(config.getPower(), config.getPAboostPin());
 
 	//Begin LoRa
 	LoRa.begin();
