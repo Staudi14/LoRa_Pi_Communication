@@ -22,8 +22,8 @@ using namespace std;
 #define LORA_DEFAULT_FREQUENCY		868e6
 #define LORA_DEFAULT_POWER			17					//17dBm
 
-#define PA_OUTPUT_RFO_PIN			0
-#define PA_OUTPUT_PA_BOOST_PIN		5
+#define PA_OUTPUT_RFO_PIN			0					//represents false
+#define PA_OUTPUT_PA_BOOST_PIN		1					//represents true
 
 
 class LoRaClass
@@ -44,7 +44,7 @@ public:
 
 	int beginPacket(int implicitHeader = false);
 	int endPacket(bool async = false);
-	void print(std::string & input);
+	void print(std::string input);
 
 	int parsePacket(uint8_t size = 0);
 	int packetRssi();
@@ -67,7 +67,8 @@ public:
 	void idle();
 	void sleep();
 
-	void setTxPower(int level, int outputPin = PA_OUTPUT_PA_BOOST_PIN);
+	void setTxPower(int level, int outputPin);
+	void setTxPower(int level);
 	void setFrequency(long frequency);
 	void setSpreadingFactor(int sf);
 	void setSignalBandwidth(long sbw);
@@ -122,6 +123,7 @@ private:
 	int _spiFrequency;
 	int _spiPort;
 	int _power;
+	int _pa_rfo_pin;
 };
 
 extern LoRaClass LoRa;

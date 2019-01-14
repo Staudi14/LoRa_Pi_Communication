@@ -139,6 +139,7 @@ LoRaClass::LoRaClass()
 	_spiFrequency = LORA_DEFAULT_SPI_FREQUENCY;
 	_spiPort = LORA_DEFAULT_SPI;
 	_power = LORA_DEFAULT_POWER;
+	_pa_rfo_pin = PA_OUTPUT_PA_BOOST_PIN;
 }
 
 LoRaClass::~LoRaClass()
@@ -257,7 +258,7 @@ void LoRaClass::begin()
 	writeRegister(REG_MODEM_CONFIG_3, 0x04);
 
 	// set output power
-	setTxPower(_power);
+	setTxPower(_power, _pa_rfo_pin);
 
 	// put in standby mode
 	idle();
@@ -535,43 +536,92 @@ void LoRaClass::sleep()
 	writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_SLEEP);
 }
 
+
+//Output Pin only true(1) or false(0)
+//
 void LoRaClass::setTxPower(int level, int outputPin)
 {
-	if (PA_OUTPUT_RFO_PIN == outputPin) {
+	_power = level;
+	_pa_rfo_pin = outputPin;
+
+	if (PA_OUTPUT_RFO_PIN == _pa_rfo_pin) {
 		// RFO
-		if (level < 0) {
-			level = 0;
+		if (_power < 0) {
+			_power = 0;
 		}
-		else if (level > 14) {
-			level = 14;
+		else if (_power > 14) {
+			_power = 14;
 		}
 
 		writeRegister(REG_PA_CONFIG, 0x70 | level);
 	}
 	else {
 		// PA BOOST
-		if (level > 17) {
-			if (level > 20) {
-				level = 20;
+		if (_power > 17) {
+			if (_power > 20) {
+				_power = 20;
 			}
 
-			// subtract 3 from level, so 18 - 20 maps to 15 - 17
-			level -= 3;
+			// subtract 3 from _power, so 18 - 20 maps to 15 - 17
+			_power -= 3;
 
 			// High Power +20 dBm Operation (Semtech SX1276/77/78/79 5.4.3.)
 			writeRegister(REG_PA_DAC, 0x87);
 			setOCP(140);
 		}
 		else {
-			if (level < 2) {
-				level = 2;
+			if (_power < 2) {
+				_power = 2;
 			}
 			//Default value PA_HF/LF or +17dBm
 			writeRegister(REG_PA_DAC, 0x84);
 			setOCP(100);
 		}
 
-		writeRegister(REG_PA_CONFIG, PA_BOOST | (level - 2));
+		writeRegister(REG_PA_CONFIG, PA_BOOST | (_power - 2));
+	}
+}
+
+void LoRaClass::setTxPower(int level)
+{
+	_power = level;
+	
+
+	if (PA_OUTPUT_RFO_PIN == _pa_rfo_pin) {
+		// RFO
+		if (_power < 0) {
+			_power = 0;
+		}
+		else if (_power > 14) {
+			_power = 14;
+		}
+
+		writeRegister(REG_PA_CONFIG, 0x70 | level);
+	}
+	else {
+		// PA BOOST
+		if (_power > 17) {
+			if (_power > 20) {
+				_power = 20;
+			}
+
+			// subtract 3 from _power, so 18 - 20 maps to 15 - 17
+			_power -= 3;
+
+			// High Power +20 dBm Operation (Semtech SX1276/77/78/79 5.4.3.)
+			writeRegister(REG_PA_DAC, 0x87);
+			setOCP(140);
+		}
+		else {
+			if (_power < 2) {
+				_power = 2;
+			}
+			//Default value PA_HF/LF or +17dBm
+			writeRegister(REG_PA_DAC, 0x84);
+			setOCP(100);
+		}
+
+		writeRegister(REG_PA_CONFIG, PA_BOOST | (_power - 2));
 	}
 }
 
@@ -845,7 +895,7 @@ void LoRaClass::onDio0Rise()
   LoRa.handleDio0Rise();
 }
 
-void LoRaClass::print(std::string &input)
+void LoRaClass::print(std::string input)
 {
 	
 	const char *in = input.c_str();
