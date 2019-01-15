@@ -3,8 +3,6 @@
 #include "LoRaClass.h"
 #include "JSON.h"
 
-
-
 #define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/config.json"
 
 
