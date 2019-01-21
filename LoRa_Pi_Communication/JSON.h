@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
 #include <iostream>
-#include "rapidjson/document.h"
+#include "../packages/rapidjson.1.0.2/build/native/include/rapidjson/document.h"
 #include "LoRaClass.h"
 
 
