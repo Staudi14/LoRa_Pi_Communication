@@ -1,9 +1,10 @@
 #include "JSON.h"
-
+#define DEBUG
 
 
 JSON::JSON()
 {
+	conf.SetObject();
 }
 
 
@@ -102,6 +103,9 @@ string JSON::getConfig()
 {
 	fstream fconfig;
 	fconfig.open(path, ios::in);
+	
+	config.clear();
+	
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 
@@ -366,23 +370,32 @@ std::string JSON::getMode()
 void JSON::setSPI(int spi)
 {
 	rapidjson::Value spiSetter;
+
 	spiSetter.SetInt(spi);
 
-	conf.AddMember("spi", spiSetter, conf.GetAllocator());
+#ifdef DEBUG
+	std::cout << "SPI: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+	conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
 }
 
 void JSON::saveJSON()
 {
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	std::fstream output;
 
 	conf.Accept(writer);
 
-	std::fstream output;
+	
 	
 	try
 	{
-		output.open(path.c_str, ios::trunc);
+#ifdef DEBUG
+		std::cout << buffer.GetString() << endl;
+#endif
+		output.open(path.c_str(), std::ios::out | std::ios::trunc);
 
 		output << buffer.GetString();
 
@@ -398,7 +411,7 @@ void JSON::saveJSON()
 	catch (const std::exception&)
 	{
 #ifdef DEBUG
-		std::out << "Something went wrong with: " + path << endl;
+		std::cout << "Something went wrong with: " + path << endl;
 #endif
 		throw;												//Pass exception to caller
 	}

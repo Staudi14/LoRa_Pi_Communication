@@ -6,9 +6,6 @@
 #include "rapidjson/stringbuffer.h"
 #include "LoRaClass.h"
 
-#ifdef DEBUG
-#define DEBUG
-#endif
 
 
 class JSON
