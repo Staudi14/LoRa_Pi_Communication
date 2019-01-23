@@ -31,9 +31,6 @@ int main(void)
 
 	user_config.setPath(USER_CONFIG_PATH);
 
-	user_config.setSPI(5);
-	user_config.saveJSON();
-
 	
 
 /*

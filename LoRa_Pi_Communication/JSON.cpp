@@ -367,17 +367,32 @@ std::string JSON::getMode()
 	return NULL;
 }
 
+
+
 void JSON::setSPI(int spi)
 {
-	rapidjson::Value spiSetter;
 
-	spiSetter.SetInt(spi);
+	if (conf.HasMember("spi"))											//spi value already exists
+	{
+		if (conf["spi"].IsInt())
+		{
+			conf["spi"].SetInt(spi);
+		}
+	}
+	else																//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(spi);
 
 #ifdef DEBUG
-	std::cout << "SPI: " << spiSetter.GetInt() << endl;
+		std::cout << "SPI: " << spiSetter.GetInt() << endl;
 #endif // DEBUG
 
-	conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
+		conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
+	}
+	
+
+	
 }
 
 void JSON::saveJSON()
