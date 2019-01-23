@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
 #include <iostream>
-#include "../packages/rapidjson.1.0.2/build/native/include/rapidjson/document.h"
+#include "rapidjson/document.h"
 #include "LoRaClass.h"
 
 
@@ -41,7 +41,5 @@ public:
 	int getRFO_pin();
 	int getPAboostPin();
 	std::string getMode();
-
-
 };
 

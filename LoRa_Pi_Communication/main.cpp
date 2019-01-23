@@ -1,22 +1,43 @@
+#define DEBUG
+
+
 #include <iostream>
 #include <string>
 #include "LoRaClass.h"
 #include "JSON.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
 
 #define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/config.json"
+#define USER_CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/user_config.json"
 
 
 using namespace std;
+using namespace rapidjson;
 
 
 int main(void)
 {
 	JSON config;
 
+	JSON user_config;
+
 	if (!config.open(CONFIG_PATH)) {
+#ifdef DEBUG
 		cout << "config.json could not be found." << endl;
+#endif
 		exit(EXIT_FAILURE);
 	}
+
+	if (user_config.open(USER_CONFIG_PATH)) {
+#ifdef DEBUG
+		cout << "user_conifg.json found" << endl;
+#endif
+
+
+	}
+
+	
 
 /*
 	//Testing JSON.h
@@ -73,8 +94,10 @@ int main(void)
 	}
 
 	LoRa.end();
+	
+	
+
 	string i;
 	cin >> i;
 	return 0;
 }
-
