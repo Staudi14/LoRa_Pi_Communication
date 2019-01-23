@@ -29,13 +29,10 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (user_config.open(USER_CONFIG_PATH)) {
-#ifdef DEBUG
-		cout << "user_conifg.json found" << endl;
-#endif
+	user_config.setPath(USER_CONFIG_PATH);
 
-
-	}
+	user_config.setSPI(5);
+	user_config.saveJSON();
 
 	
 

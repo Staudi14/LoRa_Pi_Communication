@@ -363,4 +363,46 @@ std::string JSON::getMode()
 	return NULL;
 }
 
+void JSON::setSPI(int spi)
+{
+	rapidjson::Value spiSetter;
+	spiSetter.SetInt(spi);
 
+	conf.AddMember("spi", spiSetter, conf.GetAllocator());
+}
+
+void JSON::saveJSON()
+{
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+
+	conf.Accept(writer);
+
+	std::fstream output;
+	
+	try
+	{
+		output.open(path.c_str, ios::trunc);
+
+		output << buffer.GetString();
+
+		output.close();
+	}
+	catch (const std::ifstream::failure& e)
+	{
+#ifdef DEBUG
+		std::cout << "File not found: " + path << endl;
+#endif
+		throw;												//Pass exception to caller
+	}
+	catch (const std::exception&)
+	{
+#ifdef DEBUG
+		std::out << "Something went wrong with: " + path << endl;
+#endif
+		throw;												//Pass exception to caller
+	}
+	
+
+
+}
