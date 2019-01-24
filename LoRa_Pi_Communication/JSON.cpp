@@ -433,7 +433,13 @@ void JSON::saveJSON()
 }
 
 template<class T>
-inline void JSON::setValue(string name, T value)
+T JSON::getValue(std::string name)
+{
+	return T();
+}
+
+template<class T>
+inline void JSON::setValue(std::string name, T value)
 {
 	if (conf.HasMember(name.c_str())														//spi value already exists
 	{
