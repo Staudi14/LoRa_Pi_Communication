@@ -353,14 +353,14 @@ std::string JSON::getMode()
 		}
 		else
 		{
-			cout << "pa_boost_pin is not int" << endl;
+			cout << "mode is not string" << endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "pa_boost_pin setting is missing" << endl;
+		cout << "mode setting is missing" << endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -430,7 +430,71 @@ void JSON::saveJSON()
 #endif
 		throw;												//Pass exception to caller
 	}
-	
+}
+
+template<class T>
+inline void JSON::setValue(string name, T value)
+{
+	if (conf.HasMember(name.c_str())														//spi value already exists
+	{
+		if (conf[name.c_str()].IsInt() && std::is_same_v< T , int>)							//In case value is int
+		{
+			conf[name.c_str()].SetInt(value);
+		}
+		else if (conf[name.c_str()].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
+		{
+			conf[name.c_str()].SetInt64(value);
+		}
+		else if (conf[name.c_str()].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
+		{
+			conf[name.c_str()].SetString(value.c_str());
+		}
+		else if (conf[name.c_str()].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
+		{
+			conf[name.c_str()].SetInt64(value);
+		}
+		
+	}
+	else																					//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+
+#ifdef DEBUG
+		std::cout << "Created new Element " + name;
+#endif // DEBUG
 
 
+		if (std::is_same_v< T, int >)
+		{
+			spiSetter.SetInt(value);
+#ifdef DEBUG
+			std::cout << " with int Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, int64_t >)
+		{
+			spiSetter.SetInt64(value);
+#ifdef DEBUG
+			std::cout << " with int64 Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, std::string >)
+		{
+			spiSetter.SetString(value.c_str());
+#ifdef DEBUG
+			std::cout << " with string Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, bool>)
+		{
+			spiSetter.SetBool(value);
+#ifdef DEBUG
+			std::cout << " with boolean Value of " + value << std::endl;
+#endif // DEBUG
+		}
+
+		
+
+		conf.GetObject().AddMember(name.c_str(), spiSetter, conf.GetAllocator());
+	}
 }

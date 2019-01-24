@@ -34,6 +34,10 @@ public:
 
 
 	//Getter functions
+
+	template<class T>
+	T getValue(std::string name);			//Not implemented yet
+
 	int getSPI();
 	long int getSPI_frequency();
 	int getSS_pin();
@@ -46,6 +50,10 @@ public:
 	std::string getMode();
 
 	//Setter functions
+
+	template<class T>
+	void setValue(std::string name, T value);
+
 	void setSPI(int spi);
 	/*void setSPI_frequency(long int frequency);
 	void setSS_pin(int ss);
@@ -60,4 +68,5 @@ public:
 	//Saving
 	void saveJSON();
 };
+
 
