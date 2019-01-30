@@ -59,7 +59,6 @@ bool JSON::setPath(string fpath)
 	}
 }
 
-
 bool JSON::setPath(const char * fpath)
 {
 	fstream fconfig;
@@ -367,8 +366,6 @@ std::string JSON::getMode()
 	return NULL;
 }
 
-
-
 void JSON::setSPI(int spi)
 {
 
@@ -433,15 +430,35 @@ void JSON::saveJSON()
 }
 
 template<class T>
-T JSON::getValue(std::string name)
+T inline JSON::getValue(std::string name)
 {
-	return T();
+	if (conf.HasMember(name.c_str()) {
+		return conf[name.c_str()].Get();
+	}
+	else
+	{
+		throw invalid_argument("name not found in json");
+		return 0;
+	}
+}
+
+template<class T>
+T inline JSON::getValue(char *name)
+{
+	if (conf.HasMember(name) {
+		return conf[name].Get();
+	}
+	else
+	{
+		throw invalid_argument("name not found in json");
+			return 0;
+	}
 }
 
 template<class T>
 inline void JSON::setValue(std::string name, T value)
 {
-	if (conf.HasMember(name.c_str())														//spi value already exists
+	if (conf.HasMember(name.c_str())														//If value already exists
 	{
 		if (conf[name.c_str()].IsInt() && std::is_same_v< T , int>)							//In case value is int
 		{
@@ -502,5 +519,72 @@ inline void JSON::setValue(std::string name, T value)
 		
 
 		conf.GetObject().AddMember(name.c_str(), spiSetter, conf.GetAllocator());
+	}
+}
+
+template<class T>
+void inline JSON::setValue(const char *name, T value)
+{
+	if (conf.HasMember(name)														//If value already exists
+	{
+		if (conf[name].IsInt() && std::is_same_v< T, int>)							//In case value is int
+		{
+			conf[name].SetInt(value);
+		}
+		else if (conf[name].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
+		{
+			conf[name].SetInt64(value);
+		}
+		else if (conf[name].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
+		{
+			conf[name].SetString(value.c_str());
+		}
+		else if (conf[name].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
+		{
+			conf[name].SetInt64(value);
+		}
+
+	}
+	else																					//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+
+#ifdef DEBUG
+		std::cout << "Created new Element " + name;
+#endif // DEBUG
+
+
+		if (std::is_same_v< T, int >)
+		{
+			spiSetter.SetInt(value);
+#ifdef DEBUG
+			std::cout << " with int Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, int64_t >)
+		{
+			spiSetter.SetInt64(value);
+#ifdef DEBUG
+			std::cout << " with int64 Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, std::string >)
+		{
+			spiSetter.SetString(value.c_str());
+#ifdef DEBUG
+			std::cout << " with string Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, bool>)
+		{
+			spiSetter.SetBool(value);
+#ifdef DEBUG
+			std::cout << " with boolean Value of " + value << std::endl;
+#endif // DEBUG
+		}
+
+
+
+		conf.GetObject().AddMember(name, spiSetter, conf.GetAllocator());
 	}
 }

@@ -36,7 +36,10 @@ public:
 	//Getter functions
 
 	template<class T>
-	T getValue(std::string name);			//Not implemented yet
+	T getValue(std::string name);
+
+	template<class T>
+	T getValue(char *name);
 
 	int getSPI();
 	long int getSPI_frequency();
@@ -53,6 +56,9 @@ public:
 
 	template<class T>
 	void setValue(std::string name, T value);
+
+	template<class T>
+	void setValue(const char *name, T value);
 
 	void setSPI(int spi);
 	/*void setSPI_frequency(long int frequency);
