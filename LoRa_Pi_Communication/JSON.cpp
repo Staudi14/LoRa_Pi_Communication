@@ -1,9 +1,27 @@
-#include "JSON.h"
+/*************************************************************************
+This header file provides a useful class to retrieve data from a json file.
+Copyright (C) 2019  Patrik Staudenmayer
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
+#include "JSON.h"
+#define DEBUG
 
 
 JSON::JSON()
 {
+	conf.SetObject();
 }
 
 
@@ -58,7 +76,6 @@ bool JSON::setPath(string fpath)
 	}
 }
 
-
 bool JSON::setPath(const char * fpath)
 {
 	fstream fconfig;
@@ -102,6 +119,9 @@ string JSON::getConfig()
 {
 	fstream fconfig;
 	fconfig.open(path, ios::in);
+	
+	config.clear();
+	
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 
@@ -349,18 +369,293 @@ std::string JSON::getMode()
 		}
 		else
 		{
-			cout << "pa_boost_pin is not int" << endl;
+			cout << "mode is not string" << endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "pa_boost_pin setting is missing" << endl;
+		cout << "mode setting is missing" << endl;
 		exit(EXIT_FAILURE);
 
 	}
 	return NULL;
 }
 
+void JSON::setSPI(int spi)
+{
+	setValue("spi", spi);
+	saveJSON();
+/*
+	if (conf.HasMember("spi"))											//spi value already exists
+	{
+		if (conf["spi"].IsInt())
+		{
+			conf["spi"].SetInt(spi);
+		}
+	}
+	else																//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(spi);
 
+#ifdef DEBUG
+		std::cout << "SPI: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
+	}
+*/	
+}
+
+void JSON::setSPI_frequency(long int frequency)
+{
+	setValue("spi_frequency", frequency);
+	saveJSON();
+}
+
+void JSON::setSS_pin(int ss)
+{
+	setValue("ss_pin", ss);
+	saveJSON();
+}
+
+void JSON::setResetPin(int reset)
+{
+	setValue("reset_pin", reset);
+	saveJSON();
+}
+
+void JSON::setDIO0_pin(int dio0)
+{
+	setValue("dio0_pin", dio0);
+	saveJSON();
+}
+
+void JSON::setFrequency(long int frequency)
+{
+	setValue("frequency", frequency);
+	saveJSON();
+}
+
+void JSON::setPower(int power)
+{
+	setValue("power", power);
+	saveJSON();
+}
+
+void JSON::setRFO_pin(int rfo)
+{
+	setValue("rfo_pin", rfo);
+	saveJSON();
+}
+
+void JSON::setPAboostPin(bool paBoost)
+{
+	setValue("pa_boost_pin", paBoost);
+	saveJSON();
+}
+
+void JSON::setMode(std::string mode)
+{
+	setValue("mode", mode);
+	saveJSON();
+}
+
+void JSON::saveJSON()
+{
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	std::fstream output;
+
+	conf.Accept(writer);
+
+	
+	
+	try
+	{
+#ifdef DEBUG
+		std::cout << buffer.GetString() << endl;
+#endif
+		output.open(path.c_str(), std::ios::out | std::ios::trunc);
+
+		output << buffer.GetString();
+
+		output.close();
+	}
+	catch (const std::ifstream::failure& e)
+	{
+#ifdef DEBUG
+		std::cout << "File not found: " + path << endl;
+#endif
+		throw;												//Pass exception to caller
+	}
+	catch (const std::exception&)
+	{
+#ifdef DEBUG
+		std::cout << "Something went wrong with: " + path << endl;
+#endif
+		throw;												//Pass exception to caller
+	}
+}
+
+template<class T>
+T inline JSON::getValue(std::string name)
+{
+	if (conf.HasMember(name.c_str()) {
+		return conf[name.c_str()].Get();
+	}
+	else
+	{
+		throw invalid_argument("name not found in json");
+		return 0;
+	}
+}
+
+template<class T>
+T inline JSON::getValue(char *name)
+{
+	if (conf.HasMember(name) {
+		return conf[name].Get();
+	}
+	else
+	{
+		throw invalid_argument("name not found in json");
+			return 0;
+	}
+}
+
+template<class T>
+inline void JSON::setValue(std::string name, T value)
+{
+	if (conf.HasMember(name.c_str())														//If value already exists
+	{
+		if (conf[name.c_str()].IsInt() && std::is_same_v< T , int>)							//In case value is int
+		{
+			conf[name.c_str()].SetInt(value);
+		}
+		else if (conf[name.c_str()].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
+		{
+			conf[name.c_str()].SetInt64(value);
+		}
+		else if (conf[name.c_str()].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
+		{
+			conf[name.c_str()].SetString(value.c_str());
+		}
+		else if (conf[name.c_str()].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
+		{
+			conf[name.c_str()].SetBool(value);
+		}
+		
+	}
+	else																					//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+
+#ifdef DEBUG
+		std::cout << "Created new Element " + name;
+#endif // DEBUG
+
+
+		if (std::is_same_v< T, int >)
+		{
+			spiSetter.SetInt(value);
+#ifdef DEBUG
+			std::cout << " with int Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, int64_t >)
+		{
+			spiSetter.SetInt64(value);
+#ifdef DEBUG
+			std::cout << " with int64 Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, std::string >)
+		{
+			spiSetter.SetString(value.c_str());
+#ifdef DEBUG
+			std::cout << " with string Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, bool>)
+		{
+			spiSetter.SetBool(value);
+#ifdef DEBUG
+			std::cout << " with boolean Value of " + value << std::endl;
+#endif // DEBUG
+		}
+
+		
+
+		conf.GetObject().AddMember(name.c_str(), spiSetter, conf.GetAllocator());
+	}
+}
+
+template<class T>
+inline void JSON::setValue(const char *name, T value)
+{
+	if (conf.HasMember(name)														//If value already exists
+	{
+		if (conf[name].IsInt() && std::is_same_v< T, int>)							//In case value is int
+		{
+			conf[name].SetInt(value);
+		}
+		else if (conf[name].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
+		{
+			conf[name].SetInt64(value);
+		}
+		else if (conf[name].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
+		{
+			conf[name].SetString(value.c_str());
+		}
+		else if (conf[name].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
+		{
+			conf[name].SetBool(value);
+		}
+
+	}
+	else																					//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+
+#ifdef DEBUG
+		std::cout << "Created new Element " + name;
+#endif // DEBUG
+
+
+		if (std::is_same_v< T, int >)
+		{
+			spiSetter.SetInt(value);
+#ifdef DEBUG
+			std::cout << " with int Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, int64_t >)
+		{
+			spiSetter.SetInt64(value);
+#ifdef DEBUG
+			std::cout << " with int64 Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, std::string >)
+		{
+			spiSetter.SetString(value.c_str());
+#ifdef DEBUG
+			std::cout << " with string Value of " + value << std::endl;
+#endif // DEBUG
+		}
+		else if (std::is_same_v< T, bool>)
+		{
+			spiSetter.SetBool(value);
+#ifdef DEBUG
+			std::cout << " with boolean Value of " + value << std::endl;
+#endif // DEBUG
+		}
+
+
+
+		conf.GetObject().AddMember(name, spiSetter, conf.GetAllocator());
+	}
+}
