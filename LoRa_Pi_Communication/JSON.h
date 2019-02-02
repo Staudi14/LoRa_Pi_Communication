@@ -78,15 +78,15 @@ public:
 	void setValue(const char *name, T value);
 
 	void setSPI(int spi);
-	/*void setSPI_frequency(long int frequency);
+	void setSPI_frequency(long int frequency);
 	void setSS_pin(int ss);
 	void setResetPin(int reset);
 	void setDIO0_pin(int dio0);
 	void setFrequency(long int frequency);
 	void setPower(int power);
 	void setRFO_pin(int rfo);
-	void setPAboostPin(int paBoost);
-	void setMode(std::string mode);*/
+	void setPAboostPin(bool paBoost);
+	void setMode(std::string mode);
 
 	//Saving
 	void saveJSON();

@@ -385,7 +385,8 @@ std::string JSON::getMode()
 
 void JSON::setSPI(int spi)
 {
-
+	setValue("spi", spi);
+/*
 	if (conf.HasMember("spi"))											//spi value already exists
 	{
 		if (conf["spi"].IsInt())
@@ -404,9 +405,52 @@ void JSON::setSPI(int spi)
 
 		conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
 	}
-	
+*/	
+}
 
-	
+void JSON::setSPI_frequency(long int frequency)
+{
+	setValue("spi_frequency", frequency);
+}
+
+void JSON::setSS_pin(int ss)
+{
+	setValue("ss_pin", ss);
+}
+
+void JSON::setResetPin(int reset)
+{
+	setValue("reset_pin", reset);
+}
+
+void JSON::setDIO0_pin(int dio0)
+{
+	setValue("dio0_pin", dio0);
+}
+
+void JSON::setFrequency(long int frequency)
+{
+	setValue("frequency", frequency);
+}
+
+void JSON::setPower(int power)
+{
+	setValue("power", power);
+}
+
+void JSON::setRFO_pin(int rfo)
+{
+	setValue("rfo_pin", rfo);
+}
+
+void JSON::setPAboostPin(bool paBoost)
+{
+	setValue("pa_boost_pin", paBoost);
+}
+
+void JSON::setMode(std::string mode)
+{
+	setValue("mode", mode);
 }
 
 void JSON::saveJSON()
@@ -491,7 +535,7 @@ inline void JSON::setValue(std::string name, T value)
 		}
 		else if (conf[name.c_str()].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
 		{
-			conf[name.c_str()].SetInt64(value);
+			conf[name.c_str()].SetBool(value);
 		}
 		
 	}
