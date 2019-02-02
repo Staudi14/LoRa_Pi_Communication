@@ -386,6 +386,7 @@ std::string JSON::getMode()
 void JSON::setSPI(int spi)
 {
 	setValue("spi", spi);
+	saveJSON();
 /*
 	if (conf.HasMember("spi"))											//spi value already exists
 	{
@@ -411,46 +412,55 @@ void JSON::setSPI(int spi)
 void JSON::setSPI_frequency(long int frequency)
 {
 	setValue("spi_frequency", frequency);
+	saveJSON();
 }
 
 void JSON::setSS_pin(int ss)
 {
 	setValue("ss_pin", ss);
+	saveJSON();
 }
 
 void JSON::setResetPin(int reset)
 {
 	setValue("reset_pin", reset);
+	saveJSON();
 }
 
 void JSON::setDIO0_pin(int dio0)
 {
 	setValue("dio0_pin", dio0);
+	saveJSON();
 }
 
 void JSON::setFrequency(long int frequency)
 {
 	setValue("frequency", frequency);
+	saveJSON();
 }
 
 void JSON::setPower(int power)
 {
 	setValue("power", power);
+	saveJSON();
 }
 
 void JSON::setRFO_pin(int rfo)
 {
 	setValue("rfo_pin", rfo);
+	saveJSON();
 }
 
 void JSON::setPAboostPin(bool paBoost)
 {
 	setValue("pa_boost_pin", paBoost);
+	saveJSON();
 }
 
 void JSON::setMode(std::string mode)
 {
 	setValue("mode", mode);
+	saveJSON();
 }
 
 void JSON::saveJSON()
@@ -584,7 +594,7 @@ inline void JSON::setValue(std::string name, T value)
 }
 
 template<class T>
-void inline JSON::setValue(const char *name, T value)
+inline void JSON::setValue(const char *name, T value)
 {
 	if (conf.HasMember(name)														//If value already exists
 	{
@@ -602,7 +612,7 @@ void inline JSON::setValue(const char *name, T value)
 		}
 		else if (conf[name].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
 		{
-			conf[name].SetInt64(value);
+			conf[name].SetBool(value);
 		}
 
 	}
