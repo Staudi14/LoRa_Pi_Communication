@@ -72,6 +72,9 @@ int main(void)
 		if (user_config.hasSPI())
 		{
 			LoRa.setSPIPort(user_config.getSPI());
+#ifdef DEBUG
+			std::cout << "spi " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -81,6 +84,9 @@ int main(void)
 		if (user_config.hasSPI_frequency())
 		{
 			LoRa.setSPIPort(user_config.getSPI_frequency());
+#ifdef DEBUG
+			std::cout << "spi_frequency " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -91,6 +97,9 @@ int main(void)
 		if (user_config.hasFrequency())
 		{
 			LoRa.setFrequency(user_config.getFrequency());
+#ifdef DEBUG
+			std::cout << "frequency " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -101,6 +110,9 @@ int main(void)
 		if (user_config.hasSS())
 		{
 			LoRa.setSS(user_config.getSS_pin());
+#ifdef DEBUG
+			std::cout << "ss " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -110,6 +122,9 @@ int main(void)
 		if (user_config.hasReset())
 		{
 			LoRa.setReset(user_config.getResetPin());
+#ifdef DEBUG
+			std::cout << "reset " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -119,6 +134,9 @@ int main(void)
 		if (user_config.hasDIO0())
 		{
 			LoRa.setDIO0(user_config.getDIO0_pin());
+#ifdef DEBUG
+			std::cout << "dio0 " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -129,14 +147,23 @@ int main(void)
 		if (user_config.hasPower())
 		{
 			LoRa.setTxPower(user_config.getPower(), config.getPAboostPin());
+#ifdef DEBUG
+			std::cout << "power " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else if (user_config.hasPAboost())
 		{
 			LoRa.setTxPower(config.getPower(), user_config.getPAboostPin());
+#ifdef DEBUG
+			std::cout << "PAboost " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else if(user_config.hasPower() && user_config.hasPAboost())
 		{
 			LoRa.setTxPower(user_config.getPower(), user_config.getPAboostPin());
+#ifdef DEBUG
+			std::cout << "power; PAboost " << "user_config" << endl;
+#endif // DEBUG			
 		}
 		else
 		{
@@ -160,7 +187,7 @@ int main(void)
 	}
 
 	
-
+/*
 	//Begin LoRa
 	LoRa.begin();
 
@@ -189,7 +216,7 @@ int main(void)
 	}
 
 	LoRa.end();
-	
+*/	
 	
 
 	string i;

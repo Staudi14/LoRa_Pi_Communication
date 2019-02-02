@@ -553,7 +553,7 @@ void JSON::saveJSON()
 template<class T>
 T inline JSON::getValue(std::string name)
 {
-	if (conf.HasMember(name.c_str()) {
+	if (conf.HasMember(name.c_str())) {
 		return conf[name.c_str()].Get();
 	}
 	else
@@ -566,7 +566,7 @@ T inline JSON::getValue(std::string name)
 template<class T>
 T inline JSON::getValue(char *name)
 {
-	if (conf.HasMember(name) {
+	if (conf.HasMember(name)) {
 		return conf[name].Get();
 	}
 	else
@@ -579,21 +579,21 @@ T inline JSON::getValue(char *name)
 template<class T>
 inline void JSON::setValue(std::string name, T value)
 {
-	if (conf.HasMember(name.c_str())														//If value already exists
+	if (conf.HasMember(name.c_str()))														//If value already exists
 	{
-		if (conf[name.c_str()].IsInt() && std::is_same_v< T , int>)							//In case value is int
+		if (conf[name.c_str()].IsInt() && std::is_same< T , int>::value)							//In case value is int
 		{
 			conf[name.c_str()].SetInt(value);
 		}
-		else if (conf[name.c_str()].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
+		else if (conf[name.c_str()].IsInt64() && std::is_same< T, int64_t>::value)				//In case value is int64
 		{
 			conf[name.c_str()].SetInt64(value);
 		}
-		else if (conf[name.c_str()].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
+		else if (conf[name.c_str()].IsString() && std::is_same< T, std::string>::value)			//In case value is std::string
 		{
 			conf[name.c_str()].SetString(value.c_str());
 		}
-		else if (conf[name.c_str()].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
+		else if (conf[name.c_str()].IsBool() && std::is_same< T, bool>::value)					//In case value is bool
 		{
 			conf[name.c_str()].SetBool(value);
 		}
@@ -608,28 +608,28 @@ inline void JSON::setValue(std::string name, T value)
 #endif // DEBUG
 
 
-		if (std::is_same_v< T, int >)
+		if (std::is_same< T, int >::value)
 		{
 			spiSetter.SetInt(value);
 #ifdef DEBUG
 			std::cout << " with int Value of " + value << std::endl;
 #endif // DEBUG
 		}
-		else if (std::is_same_v< T, int64_t >)
+		else if (std::is_same< T, int64_t >::value)
 		{
 			spiSetter.SetInt64(value);
 #ifdef DEBUG
 			std::cout << " with int64 Value of " + value << std::endl;
 #endif // DEBUG
 		}
-		else if (std::is_same_v< T, std::string >)
+		else if (std::is_same< T, std::string >::value)
 		{
 			spiSetter.SetString(value.c_str());
 #ifdef DEBUG
 			std::cout << " with string Value of " + value << std::endl;
 #endif // DEBUG
 		}
-		else if (std::is_same_v< T, bool>)
+		else if (std::is_same< T, bool>::value)
 		{
 			spiSetter.SetBool(value);
 #ifdef DEBUG
@@ -646,21 +646,21 @@ inline void JSON::setValue(std::string name, T value)
 template<class T>
 inline void JSON::setValue(const char *name, T value)
 {
-	if (conf.HasMember(name)														//If value already exists
+	if (conf.HasMember(name))														//If value already exists
 	{
-		if (conf[name].IsInt() && std::is_same_v< T, int>)							//In case value is int
+		if (conf[name].IsInt() && std::is_same< T, int>::value)							//In case value is int
 		{
 			conf[name].SetInt(value);
 		}
-		else if (conf[name].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
+		else if (conf[name].IsInt64() && std::is_same< T, int64_t>::value)				//In case value is int64
 		{
 			conf[name].SetInt64(value);
 		}
-		else if (conf[name].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
+		else if (conf[name].IsString() && std::is_same< T, std::string>::value)			//In case value is std::string
 		{
 			conf[name].SetString(value.c_str());
 		}
-		else if (conf[name].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
+		else if (conf[name].IsBool() && std::is_same< T, bool>::value)					//In case value is bool
 		{
 			conf[name].SetBool(value);
 		}
