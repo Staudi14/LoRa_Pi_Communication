@@ -88,6 +88,19 @@ public:
 	void setPAboostPin(bool paBoost);
 	void setMode(std::string mode);
 
+	//Assert that parameter exists
+
+	bool hasSPI();
+	bool hasSPI_frequency();
+	bool hasSS();
+	bool hasReset();
+	bool hasDIO0();
+	bool hasFrequency();
+	bool hasPower();
+	bool hasRFO();
+	bool hasPAboost();
+	bool hasMode();
+
 	//Saving
 	void saveJSON();
 };

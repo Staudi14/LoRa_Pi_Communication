@@ -104,7 +104,12 @@ public:
 
 	void setPins(int ss, int reset, int dio0);
 	void setSPIFrequency(uint32_t frequency);
+	void setSPIFrequency(uint32_t frequency);
 	void setSPIPort(unsigned int port);
+
+	void setSS(int ss);
+	void setReset(int reset);
+	void setDIO0(int dio0);
 
 #ifdef DUMPREG
 	void dumpRegisters(Stream& out);

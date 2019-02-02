@@ -463,6 +463,56 @@ void JSON::setMode(std::string mode)
 	saveJSON();
 }
 
+bool JSON::hasSPI()
+{
+	return conf.HasMember("spi");
+}
+
+bool JSON::hasSPI_frequency()
+{
+	return conf.HasMember("spi_frequency");
+}
+
+bool JSON::hasSS()
+{
+	return conf.HasMember("ss_pin");
+}
+
+bool JSON::hasReset()
+{
+	return conf.HasMember("reset_pin");
+}
+
+bool JSON::hasDIO0()
+{
+	return conf.HasMember("dio0_pin");
+}
+
+bool JSON::hasFrequency()
+{
+	return conf.HasMember("frequency");
+}
+
+bool JSON::hasPower()
+{
+	return conf.HasMember("power");
+}
+
+bool JSON::hasRFO()
+{
+	return conf.HasMember("rfo_pin");
+}
+
+bool JSON::hasPAboost()
+{
+	return conf.HasMember("pa_boost_pin");
+}
+
+bool JSON::hasMode()
+{
+	return conf.HasMember("mode");
+}
+
 void JSON::saveJSON()
 {
 	rapidjson::StringBuffer buffer;
