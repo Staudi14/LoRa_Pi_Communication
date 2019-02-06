@@ -1,36 +1,41 @@
 {
-    //Select used SPI Interface on Raspberry Pi
-    //For more information look at "https://github.com/Staudi14/LoRa_Pi_Communication/wiki/Documentation-LoRaClass#setspiportport"
-    "spi": 0,
-
-    //Select SPI frequency.
-    //Default Frequency is 8MHz
-    "spi_frequency": 8000000,
-
-    //Select transmission and receive frequency. To see which frequencies are supported by your module check the datasheet.
-    "frequency": 868000000,
-
-    //Select the Pin's to connect the module to
-    //rfo_pin and pa_boost_pin aren't used per default
-    //This file uses the BCM numbering
-    "ss_pin": 22,
-    "reset_pin": 27,
-    "dio0_pin": 17,
-    "rfo_pin": 0,
-
-    //Output of SX127x chip set
-    //true -> outputs on PA_BOOST_PIN
-    //False -> outputs on PA_LF or PA_HF depending on frequency used.
-    "pa_boost_pin": true,
+  //Set user sepezific setting in user_config.json. If it is nonexistent than create a new
+  //textfile called "user_config.json". To change the settings copy and paste the to be changed
+  //line into the user_config.json be sure to put curly braces over all parameters like in this file.
 
 
-    //Set output power
-    //The values from 0 ... 20 represents a TX power from -3dBm to 17dBm
-    "power": 15,
+  //Select used SPI Interface on Raspberry Pi
+  //For more information look at "https://github.com/Staudi14/LoRa_Pi_Communication/wiki/Documentation-LoRaClass#setspiportport"
+  "spi": 0,
 
-    //Select mode of operation
-    //r ... only receive
-    //w ... only send
-    //rw ... send and receive
-    "mode": "rw"
+  //Select SPI frequency.
+  //Default Frequency is 8MHz
+  "spi_frequency": 8000000,
+
+  //Select transmission and receive frequency. To see which frequencies are supported by your module check the datasheet.
+  "frequency": 868000000,
+
+  //Select the Pin's to connect the module to
+  //rfo_pin and pa_boost_pin aren't used per default
+  //This file uses the BCM numbering
+  "ss_pin": 22,
+  "reset_pin": 27,
+  "dio0_pin": 17,
+  "rfo_pin": 0,
+
+  //Output of SX127x chip set
+  //true -> outputs on PA_BOOST_PIN
+  //False -> outputs on PA_LF or PA_HF depending on frequency used.
+  "pa_boost_pin": true,
+
+
+  //Set output power
+  //The values from 0 ... 20 represents a TX power from -3dBm to 17dBm
+  "power": 15,
+
+  //Select mode of operation
+  //r ... only receive
+  //w ... only send
+  //rw ... send and receive
+  "mode": "rw"
 }

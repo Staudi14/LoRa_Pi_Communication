@@ -1,3 +1,21 @@
+/*************************************************************************
+This library provides a class to interface with an Semtech SX12xx chip.
+Copyright (C) 2019  Patrik Staudenmayer
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
+
 #include "LoRaClass.h"
 
 //misc
@@ -912,6 +930,19 @@ void LoRaClass::setSPIPort(unsigned int port)
 	{
 		_spiPort = port;
 	}
+}
+
+void LoRaClass::setSS(int ss)
+{
+	_ss = ss;
+}
+void LoRaClass::setReset(int reset)
+{
+	_reset = reset;
+}
+void LoRaClass::setDIO0(int dio0)
+{
+	_dio0 = dio0;
 }
 
 LoRaClass LoRa;
