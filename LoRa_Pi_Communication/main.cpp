@@ -46,11 +46,7 @@ int main(void)
 		cout << "config.json could not be found." << endl;
 #endif
 		exit(EXIT_FAILURE);
-	}
-
-	user_config.setPath(USER_CONFIG_PATH);
-
-	
+	}	
 
 /*
 	//Testing JSON.h
@@ -78,7 +74,7 @@ int main(void)
 		}
 		else
 		{
-			LoRa.setSPIFrequency(user_config.getSPI());
+			LoRa.setSPIFrequency(config.getSPI());
 		}
 
 		if (user_config.hasSPI_frequency())
@@ -90,7 +86,7 @@ int main(void)
 		}
 		else
 		{
-			LoRa.setSPIFrequency(user_config.getSPI_frequency());
+			LoRa.setSPIFrequency(config.getSPI_frequency());
 		}
 
 		//Set transmission frequency
@@ -186,6 +182,9 @@ int main(void)
 		LoRa.setTxPower(config.getPower(), config.getPAboostPin());
 	}
 
+#ifdef DEBUG
+	std::cout << "Config loaded" << std::endl;
+#endif // DEBUG
 	
 /*
 	//Begin LoRa
