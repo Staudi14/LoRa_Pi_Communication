@@ -932,4 +932,17 @@ void LoRaClass::setSPIPort(unsigned int port)
 	}
 }
 
+void LoRaClass::setSS(int ss)
+{
+	_ss = ss;
+}
+void LoRaClass::setReset(int reset)
+{
+	_reset = reset;
+}
+void LoRaClass::setDIO0(int dio0)
+{
+	_dio0 = dio0;
+}
+
 LoRaClass LoRa;

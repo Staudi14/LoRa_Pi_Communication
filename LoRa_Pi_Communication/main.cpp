@@ -46,11 +46,7 @@ int main(void)
 		cout << "config.json could not be found." << endl;
 #endif
 		exit(EXIT_FAILURE);
-	}
-
-	user_config.setPath(USER_CONFIG_PATH);
-
-	
+	}	
 
 /*
 	//Testing JSON.h
@@ -66,19 +62,131 @@ int main(void)
 	cout << "mode: " << config.getMode() << endl;
 */	
 
-	//Setting up SPI
-	LoRa.setSPIPort(config.getSPI());
-	LoRa.setSPIFrequency(config.getSPI_frequency());
+	if (user_config.open(USER_CONFIG_PATH))			//Checks if user_config exists
+	{
+		//Setting up SPI
+		if (user_config.hasSPI())
+		{
+			LoRa.setSPIPort(user_config.getSPI());
+#ifdef DEBUG
+			std::cout << "spi " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setSPIFrequency(config.getSPI());
+		}
 
-	//Set transmission frequency
-	LoRa.setFrequency(config.getFrequency());
+		if (user_config.hasSPI_frequency())
+		{
+			LoRa.setSPIPort(user_config.getSPI_frequency());
+#ifdef DEBUG
+			std::cout << "spi_frequency " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setSPIFrequency(config.getSPI_frequency());
+		}
 
-	//Set Pins
-	LoRa.setPins(config.getSS_pin(), config.getResetPin(), config.getDIO0_pin());
+		//Set transmission frequency
+		if (user_config.hasFrequency())
+		{
+			LoRa.setFrequency(user_config.getFrequency());
+#ifdef DEBUG
+			std::cout << "frequency " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setFrequency(config.getFrequency());
+		}
 
-	//Set Tx power and RFO pin
-	LoRa.setTxPower(config.getPower(), config.getPAboostPin());
+		//Set Pins
+		if (user_config.hasSS())
+		{
+			LoRa.setSS(user_config.getSS_pin());
+#ifdef DEBUG
+			std::cout << "ss " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setSS(config.getSS_pin());
+		}
 
+		if (user_config.hasReset())
+		{
+			LoRa.setReset(user_config.getResetPin());
+#ifdef DEBUG
+			std::cout << "reset " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setReset(config.getResetPin());
+		}
+
+		if (user_config.hasDIO0())
+		{
+			LoRa.setDIO0(user_config.getDIO0_pin());
+#ifdef DEBUG
+			std::cout << "dio0 " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setDIO0(config.getDIO0_pin());
+		}
+
+		//Set Tx power and RFO pin
+		if (user_config.hasPower())
+		{
+			LoRa.setTxPower(user_config.getPower(), config.getPAboostPin());
+#ifdef DEBUG
+			std::cout << "power " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else if (user_config.hasPAboost())
+		{
+			LoRa.setTxPower(config.getPower(), user_config.getPAboostPin());
+#ifdef DEBUG
+			std::cout << "PAboost " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else if(user_config.hasPower() && user_config.hasPAboost())
+		{
+			LoRa.setTxPower(user_config.getPower(), user_config.getPAboostPin());
+#ifdef DEBUG
+			std::cout << "power; PAboost " << "user_config" << endl;
+#endif // DEBUG			
+		}
+		else
+		{
+			LoRa.setTxPower(config.getPower(), config.getPAboostPin());
+		}
+	}
+	else
+	{
+		//Setting up SPI
+		LoRa.setSPIPort(config.getSPI());
+		LoRa.setSPIFrequency(config.getSPI_frequency());
+
+		//Set transmission frequency
+		LoRa.setFrequency(config.getFrequency());
+
+		//Set Pins
+		LoRa.setPins(config.getSS_pin(), config.getResetPin(), config.getDIO0_pin());
+
+		//Set Tx power and RFO pin
+		LoRa.setTxPower(config.getPower(), config.getPAboostPin());
+	}
+
+#ifdef DEBUG
+	std::cout << "Config loaded" << std::endl;
+#endif // DEBUG
+	
+/*
 	//Begin LoRa
 	LoRa.begin();
 
@@ -107,7 +215,7 @@ int main(void)
 	}
 
 	LoRa.end();
-	
+*/	
 	
 
 	string i;

@@ -37,6 +37,7 @@ void JSON::commentRemover()
 
 	sprintf(iter, "%s", config.c_str());
 
+	
 	for (unsigned int i = 0; i < config.length() - 1; i++) {
 		if (iter[i] == '/' && iter[i + 1] == '/') {
 			copy = false;
@@ -126,14 +127,18 @@ string JSON::getConfig()
 	if (fconfig.is_open()) {		//Testing if path is correct
 
 		config.assign(istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
-		//cout << config << endl;				//For debugging purposes
-
+		
+#ifdef DEBUG
+		cout << config << endl;				//For debugging purposes
+#endif
 		fconfig.close();
 
-		commentRemover();
-
+		if (config.length() > 2)
+		{
+			commentRemover();
+		}		
+		
 		conf.Parse(config.c_str());
-
 
 		return string(config);
 	}
@@ -385,9 +390,6 @@ std::string JSON::getMode()
 
 void JSON::setSPI(int spi)
 {
-	setValue("spi", spi);
-	saveJSON();
-/*
 	if (conf.HasMember("spi"))											//spi value already exists
 	{
 		if (conf["spi"].IsInt())
@@ -406,61 +408,274 @@ void JSON::setSPI(int spi)
 
 		conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
 	}
-*/	
+
+	saveJSON();
 }
 
 void JSON::setSPI_frequency(long int frequency)
 {
-	setValue("spi_frequency", frequency);
+	if (conf.HasMember("spi_frequency"))											
+	{
+		if (conf["spi_frequency"].IsInt64())
+		{
+			conf["spi_frequency"].SetInt64(frequency);
+		}
+	}
+	else																
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(frequency);
+
+#ifdef DEBUG
+		std::cout << "spi_frequency: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("spi_frequency", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setSS_pin(int ss)
 {
-	setValue("ss_pin", ss);
+	if (conf.HasMember("ss_pin"))
+	{
+		if (conf["ss_pin"].IsInt())
+		{
+			conf["ss_pin"].SetInt(ss);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(ss);
+
+#ifdef DEBUG
+		std::cout << "ss_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("ss_pin", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setResetPin(int reset)
 {
-	setValue("reset_pin", reset);
+	if (conf.HasMember("reset_pin"))
+	{
+		if (conf["reset_pin"].IsInt())
+		{
+			conf["reset_pin"].SetInt(reset);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(reset);
+
+#ifdef DEBUG
+		std::cout << "reset_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("reset_pin", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setDIO0_pin(int dio0)
 {
-	setValue("dio0_pin", dio0);
+	if (conf.HasMember("dio0_pin"))
+	{
+		if (conf["dio0_pin"].IsInt())
+		{
+			conf["dio0_pin"].SetInt(dio0);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(dio0);
+
+#ifdef DEBUG
+		std::cout << "dio0_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("dio0_pin", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setFrequency(long int frequency)
 {
-	setValue("frequency", frequency);
+	if (conf.HasMember("frequency"))
+	{
+		if (conf["frequency"].IsInt64())
+		{
+			conf["frequency"].SetInt64(frequency);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt64(frequency);
+
+#ifdef DEBUG
+		std::cout << "frequency: " << spiSetter.GetInt64() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("frequency", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setPower(int power)
 {
-	setValue("power", power);
+	if (conf.HasMember("power"))
+	{
+		if (conf["power"].IsInt())
+		{
+			conf["power"].SetInt(power);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(power);
+
+#ifdef DEBUG
+		std::cout << "power: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("power", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setRFO_pin(int rfo)
 {
-	setValue("rfo_pin", rfo);
+	if (conf.HasMember("rfo_pin"))
+	{
+		if (conf["rfo_pin"].IsInt())
+		{
+			conf["rfo_pin"].SetInt(rfo);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(rfo);
+
+#ifdef DEBUG
+		std::cout << "rfo_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("rfo_pin", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setPAboostPin(bool paBoost)
 {
-	setValue("pa_boost_pin", paBoost);
+	if (conf.HasMember("pa_boost_pin"))
+	{
+		if (conf["pa_boost_pin"].IsBool())
+		{
+			conf["pa_boost_pin"].SetBool(paBoost);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetBool(paBoost);
+
+#ifdef DEBUG
+		std::cout << "pa_boost_pin: " << spiSetter.GetBool() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("pa_boost_pin", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
 }
 
 void JSON::setMode(std::string mode)
 {
-	setValue("mode", mode);
+	if (conf.HasMember("mode"))
+	{
+		if (conf["mode"].IsString())
+		{
+			conf["mode"].SetString(mode.c_str(), conf.GetAllocator());
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetString(mode.c_str(), conf.GetAllocator());
+
+#ifdef DEBUG
+		std::cout << "mode: " << spiSetter.GetString() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("mode", spiSetter, conf.GetAllocator());
+	}
+
 	saveJSON();
+}
+
+bool JSON::hasSPI()
+{
+	return conf.HasMember("spi");
+}
+
+bool JSON::hasSPI_frequency()
+{
+	return conf.HasMember("spi_frequency");
+}
+
+bool JSON::hasSS()
+{
+	return conf.HasMember("ss_pin");
+}
+
+bool JSON::hasReset()
+{
+	return conf.HasMember("reset_pin");
+}
+
+bool JSON::hasDIO0()
+{
+	return conf.HasMember("dio0_pin");
+}
+
+bool JSON::hasFrequency()
+{
+	return conf.HasMember("frequency");
+}
+
+bool JSON::hasPower()
+{
+	return conf.HasMember("power");
+}
+
+bool JSON::hasRFO()
+{
+	return conf.HasMember("rfo_pin");
+}
+
+bool JSON::hasPAboost()
+{
+	return conf.HasMember("pa_boost_pin");
+}
+
+bool JSON::hasMode()
+{
+	return conf.HasMember("mode");
 }
 
 void JSON::saveJSON()
@@ -497,165 +712,5 @@ void JSON::saveJSON()
 		std::cout << "Something went wrong with: " + path << endl;
 #endif
 		throw;												//Pass exception to caller
-	}
-}
-
-template<class T>
-T inline JSON::getValue(std::string name)
-{
-	if (conf.HasMember(name.c_str()) {
-		return conf[name.c_str()].Get();
-	}
-	else
-	{
-		throw invalid_argument("name not found in json");
-		return 0;
-	}
-}
-
-template<class T>
-T inline JSON::getValue(char *name)
-{
-	if (conf.HasMember(name) {
-		return conf[name].Get();
-	}
-	else
-	{
-		throw invalid_argument("name not found in json");
-			return 0;
-	}
-}
-
-template<class T>
-inline void JSON::setValue(std::string name, T value)
-{
-	if (conf.HasMember(name.c_str())														//If value already exists
-	{
-		if (conf[name.c_str()].IsInt() && std::is_same_v< T , int>)							//In case value is int
-		{
-			conf[name.c_str()].SetInt(value);
-		}
-		else if (conf[name.c_str()].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
-		{
-			conf[name.c_str()].SetInt64(value);
-		}
-		else if (conf[name.c_str()].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
-		{
-			conf[name.c_str()].SetString(value.c_str());
-		}
-		else if (conf[name.c_str()].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
-		{
-			conf[name.c_str()].SetBool(value);
-		}
-		
-	}
-	else																					//spi value does not exist already and must be created
-	{
-		rapidjson::Value spiSetter;
-
-#ifdef DEBUG
-		std::cout << "Created new Element " + name;
-#endif // DEBUG
-
-
-		if (std::is_same_v< T, int >)
-		{
-			spiSetter.SetInt(value);
-#ifdef DEBUG
-			std::cout << " with int Value of " + value << std::endl;
-#endif // DEBUG
-		}
-		else if (std::is_same_v< T, int64_t >)
-		{
-			spiSetter.SetInt64(value);
-#ifdef DEBUG
-			std::cout << " with int64 Value of " + value << std::endl;
-#endif // DEBUG
-		}
-		else if (std::is_same_v< T, std::string >)
-		{
-			spiSetter.SetString(value.c_str());
-#ifdef DEBUG
-			std::cout << " with string Value of " + value << std::endl;
-#endif // DEBUG
-		}
-		else if (std::is_same_v< T, bool>)
-		{
-			spiSetter.SetBool(value);
-#ifdef DEBUG
-			std::cout << " with boolean Value of " + value << std::endl;
-#endif // DEBUG
-		}
-
-		
-
-		conf.GetObject().AddMember(name.c_str(), spiSetter, conf.GetAllocator());
-	}
-}
-
-template<class T>
-inline void JSON::setValue(const char *name, T value)
-{
-	if (conf.HasMember(name)														//If value already exists
-	{
-		if (conf[name].IsInt() && std::is_same_v< T, int>)							//In case value is int
-		{
-			conf[name].SetInt(value);
-		}
-		else if (conf[name].IsInt64() && std::is_same_v< T, int64_t>)				//In case value is int64
-		{
-			conf[name].SetInt64(value);
-		}
-		else if (conf[name].IsString() && std::is_same_v< T, std::string>)			//In case value is std::string
-		{
-			conf[name].SetString(value.c_str());
-		}
-		else if (conf[name].IsBool() && std::is_same_v< T, bool>)					//In case value is bool
-		{
-			conf[name].SetBool(value);
-		}
-
-	}
-	else																					//spi value does not exist already and must be created
-	{
-		rapidjson::Value spiSetter;
-
-#ifdef DEBUG
-		std::cout << "Created new Element " + name;
-#endif // DEBUG
-
-
-		if (std::is_same_v< T, int >)
-		{
-			spiSetter.SetInt(value);
-#ifdef DEBUG
-			std::cout << " with int Value of " + value << std::endl;
-#endif // DEBUG
-		}
-		else if (std::is_same_v< T, int64_t >)
-		{
-			spiSetter.SetInt64(value);
-#ifdef DEBUG
-			std::cout << " with int64 Value of " + value << std::endl;
-#endif // DEBUG
-		}
-		else if (std::is_same_v< T, std::string >)
-		{
-			spiSetter.SetString(value.c_str());
-#ifdef DEBUG
-			std::cout << " with string Value of " + value << std::endl;
-#endif // DEBUG
-		}
-		else if (std::is_same_v< T, bool>)
-		{
-			spiSetter.SetBool(value);
-#ifdef DEBUG
-			std::cout << " with boolean Value of " + value << std::endl;
-#endif // DEBUG
-		}
-
-
-
-		conf.GetObject().AddMember(name, spiSetter, conf.GetAllocator());
 	}
 }

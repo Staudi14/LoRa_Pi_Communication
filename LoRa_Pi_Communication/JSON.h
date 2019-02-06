@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #pragma once
 #include <fstream>
 #include <iostream>
+#include <type_traits>
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
@@ -52,12 +53,6 @@ public:
 
 	//Getter functions
 
-	template<class T>
-	T getValue(std::string name);
-
-	template<class T>
-	T getValue(char *name);
-
 	int getSPI();
 	long int getSPI_frequency();
 	int getSS_pin();
@@ -71,12 +66,6 @@ public:
 
 	//Setter functions
 
-	template<class T>
-	void setValue(std::string name, T value);
-
-	template<class T>
-	void setValue(const char *name, T value);
-
 	void setSPI(int spi);
 	void setSPI_frequency(long int frequency);
 	void setSS_pin(int ss);
@@ -88,8 +77,19 @@ public:
 	void setPAboostPin(bool paBoost);
 	void setMode(std::string mode);
 
+	//Assert that parameter exists
+
+	bool hasSPI();
+	bool hasSPI_frequency();
+	bool hasSS();
+	bool hasReset();
+	bool hasDIO0();
+	bool hasFrequency();
+	bool hasPower();
+	bool hasRFO();
+	bool hasPAboost();
+	bool hasMode();
+
 	//Saving
 	void saveJSON();
 };
-
-
