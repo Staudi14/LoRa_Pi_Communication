@@ -23,9 +23,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "LoRaClass.h"
 #include "JSON.h"
 
-#define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/config.json"
-#define USER_CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/user_config.json"
-#define LOG_PATH "/home/pi/projects/LoRa_Pi_Communication/log.txt"
+#define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/config.json"
+#define USER_CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/user_config.json"
+#define LOG_PATH "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/log.txt"
 
 
 using namespace std;
@@ -36,6 +36,10 @@ int main(void)
 {
     JSON config;
 	JSON user_config;
+
+#ifdef DEBUG
+    std::cout << "Before File opening" << std::endl;
+#endif
 
 	if (!config.open(CONFIG_PATH)) {
 #ifdef DEBUG
