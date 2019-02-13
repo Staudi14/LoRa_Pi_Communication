@@ -58,7 +58,7 @@ void JSON::commentRemover()
 		newString.append(1, iter[config.length() - 1]);
 	}
 
-    config = newString();
+    config = newString;
 }
 
 bool JSON::setPath(std::string fpath)
@@ -126,10 +126,10 @@ std::string JSON::getConfig()
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 
-        config.assign(std::istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
+        config.assign(std::istreambuf_iterator<char>(fconfig), std::istreambuf_iterator<char>());
 		
 #ifdef DEBUG
-        std::cout << config << std::endl;				//For debugging purposes
+       std::cout << config << std::endl;				//For debugging purposes
 #endif
 		fconfig.close();
 
