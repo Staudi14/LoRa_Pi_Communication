@@ -58,13 +58,13 @@ void JSON::commentRemover()
 		newString.append(1, iter[config.length() - 1]);
 	}
 
-	config = newString;
+    config = newString();
 }
 
-bool JSON::setPath(string fpath)
+bool JSON::setPath(std::string fpath)
 {
-	fstream fconfig;
-	fconfig.open(fpath.c_str(), ios::in);
+    std::fstream fconfig;
+    fconfig.open(fpath.c_str(), std::ios::in);
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 		fconfig.close();
@@ -79,8 +79,8 @@ bool JSON::setPath(string fpath)
 
 bool JSON::setPath(const char * fpath)
 {
-	fstream fconfig;
-	fconfig.open(fpath, ios::in);
+    std::fstream fconfig;
+    fconfig.open(fpath, std::ios::in);
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 		fconfig.close();
@@ -116,20 +116,20 @@ bool JSON::open(const char * fpath)
 
 }
 
-string JSON::getConfig()
+std::string JSON::getConfig()
 {
-	fstream fconfig;
-	fconfig.open(path, ios::in);
+    std::fstream fconfig;
+    fconfig.open(path, std::ios::in);
 	
 	config.clear();
 	
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 
-		config.assign(istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
+        config.assign(std::istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
 		
 #ifdef DEBUG
-		cout << config << endl;				//For debugging purposes
+        std::cout << config << std::endl;				//For debugging purposes
 #endif
 		fconfig.close();
 
@@ -140,7 +140,7 @@ string JSON::getConfig()
 		
 		conf.Parse(config.c_str());
 
-		return string(config);
+        return std::string(config);
 	}
 	else
 	{
@@ -158,14 +158,14 @@ int JSON::getSPI()
 		}
 		else
 		{
-			cout << "spi is not int" << endl;
+            std::cout << "spi is not int" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "spi setting is missing" << endl;
+        std::cout << "spi setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -182,14 +182,14 @@ long int JSON::getSPI_frequency()
 		}
 		else
 		{
-			cout << "spi_frequency is not int64" << endl;
+            std::cout << "spi_frequency is not int64" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "spi_frequency setting is missing" << endl;
+        std::cout << "spi_frequency setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -206,14 +206,14 @@ int JSON::getSS_pin()
 		}
 		else
 		{
-			cout << "ss_pin is not int" << endl;
+            std::cout << "ss_pin is not int" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "ss_pin setting is missing" << endl;
+        std::cout << "ss_pin setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -230,14 +230,14 @@ int JSON::getResetPin()
 		}
 		else
 		{
-			cout << "reset_pin is not int" << endl;
+            std::cout << "reset_pin is not int" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "reset_pin setting is missing" << endl;
+        std::cout << "reset_pin setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -254,14 +254,14 @@ int JSON::getDIO0_pin()
 		}
 		else
 		{
-			cout << "dio0_pin is not int" << endl;
+            std::cout << "dio0_pin is not int" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "dio0_pin setting is missing" << endl;
+        std::cout << "dio0_pin setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -278,14 +278,14 @@ long int JSON::getFrequency()
 		}
 		else
 		{
-			cout << "frequency is not int64" << endl;
+            std::cout << "frequency is not int64" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "frequency setting is missing" << endl;
+        std::cout << "frequency setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -302,14 +302,14 @@ int JSON::getPower()
 		}
 		else
 		{
-			cout << "power is not int" << endl;
+            std::cout << "power is not int" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "power setting is missing" << endl;
+        std::cout << "power setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -326,14 +326,14 @@ int JSON::getRFO_pin()
 		}
 		else
 		{
-			cout << "rfo_pin is not int" << endl;
+            std::cout << "rfo_pin is not int" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "rfo_pin setting is missing" << endl;
+        std::cout << "rfo_pin setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -350,14 +350,14 @@ int JSON::getPAboostPin()
 		}
 		else
 		{
-			cout << "pa_boost_pin is not bool" << endl;
+            std::cout << "pa_boost_pin is not bool" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "pa_boost_pin setting is missing" << endl;
+        std::cout << "pa_boost_pin setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -374,14 +374,14 @@ std::string JSON::getMode()
 		}
 		else
 		{
-			cout << "mode is not string" << endl;
+            std::cout << "mode is not string" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "mode setting is missing" << endl;
+        std::cout << "mode setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
 
 	}
@@ -403,7 +403,7 @@ void JSON::setSPI(int spi)
 		spiSetter.SetInt(spi);
 
 #ifdef DEBUG
-		std::cout << "SPI: " << spiSetter.GetInt() << endl;
+        std::cout << "SPI: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
@@ -427,7 +427,7 @@ void JSON::setSPI_frequency(long int frequency)
 		spiSetter.SetInt(frequency);
 
 #ifdef DEBUG
-		std::cout << "spi_frequency: " << spiSetter.GetInt() << endl;
+        std::cout << "spi_frequency: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("spi_frequency", spiSetter, conf.GetAllocator());
@@ -451,7 +451,7 @@ void JSON::setSS_pin(int ss)
 		spiSetter.SetInt(ss);
 
 #ifdef DEBUG
-		std::cout << "ss_pin: " << spiSetter.GetInt() << endl;
+        std::cout << "ss_pin: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("ss_pin", spiSetter, conf.GetAllocator());
@@ -475,7 +475,7 @@ void JSON::setResetPin(int reset)
 		spiSetter.SetInt(reset);
 
 #ifdef DEBUG
-		std::cout << "reset_pin: " << spiSetter.GetInt() << endl;
+        std::cout << "reset_pin: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("reset_pin", spiSetter, conf.GetAllocator());
@@ -499,7 +499,7 @@ void JSON::setDIO0_pin(int dio0)
 		spiSetter.SetInt(dio0);
 
 #ifdef DEBUG
-		std::cout << "dio0_pin: " << spiSetter.GetInt() << endl;
+        std::cout << "dio0_pin: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("dio0_pin", spiSetter, conf.GetAllocator());
@@ -523,7 +523,7 @@ void JSON::setFrequency(long int frequency)
 		spiSetter.SetInt64(frequency);
 
 #ifdef DEBUG
-		std::cout << "frequency: " << spiSetter.GetInt64() << endl;
+        std::cout << "frequency: " << spiSetter.GetInt64() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("frequency", spiSetter, conf.GetAllocator());
@@ -547,7 +547,7 @@ void JSON::setPower(int power)
 		spiSetter.SetInt(power);
 
 #ifdef DEBUG
-		std::cout << "power: " << spiSetter.GetInt() << endl;
+        std::cout << "power: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("power", spiSetter, conf.GetAllocator());
@@ -571,7 +571,7 @@ void JSON::setRFO_pin(int rfo)
 		spiSetter.SetInt(rfo);
 
 #ifdef DEBUG
-		std::cout << "rfo_pin: " << spiSetter.GetInt() << endl;
+        std::cout << "rfo_pin: " << spiSetter.GetInt() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("rfo_pin", spiSetter, conf.GetAllocator());
@@ -595,7 +595,7 @@ void JSON::setPAboostPin(bool paBoost)
 		spiSetter.SetBool(paBoost);
 
 #ifdef DEBUG
-		std::cout << "pa_boost_pin: " << spiSetter.GetBool() << endl;
+        std::cout << "pa_boost_pin: " << spiSetter.GetBool() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("pa_boost_pin", spiSetter, conf.GetAllocator());
@@ -619,7 +619,7 @@ void JSON::setMode(std::string mode)
 		spiSetter.SetString(mode.c_str(), conf.GetAllocator());
 
 #ifdef DEBUG
-		std::cout << "mode: " << spiSetter.GetString() << endl;
+        std::cout << "mode: " << spiSetter.GetString() << std::endl;
 #endif // DEBUG
 
 		conf.GetObject().AddMember("mode", spiSetter, conf.GetAllocator());
@@ -691,7 +691,7 @@ void JSON::saveJSON()
 	try
 	{
 #ifdef DEBUG
-		std::cout << buffer.GetString() << endl;
+        std::cout << buffer.GetString() << std::endl;
 #endif
 		output.open(path.c_str(), std::ios::out | std::ios::trunc);
 
@@ -702,14 +702,14 @@ void JSON::saveJSON()
 	catch (const std::ifstream::failure& e)
 	{
 #ifdef DEBUG
-		std::cout << "File not found: " + path << endl;
+        std::cout << "File not found: " + path << std::endl;
 #endif
 		throw;												//Pass exception to caller
 	}
 	catch (const std::exception&)
 	{
 #ifdef DEBUG
-		std::cout << "Something went wrong with: " + path << endl;
+        std::cout << "Something went wrong with: " + path << std::endl;
 #endif
 		throw;												//Pass exception to caller
 	}
