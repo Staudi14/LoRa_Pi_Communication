@@ -15,30 +15,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-
-
 #define DEBUG
-
 
 #include <iostream>
 #include <string>
+
 #include "LoRaClass.h"
 #include "JSON.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
 
 #define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/config.json"
 #define USER_CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/user_config.json"
+#define LOG_PATH "/home/pi/projects/LoRa_Pi_Communication/log.txt"
 
 
 using namespace std;
-using namespace rapidjson;
+
 
 
 int main(void)
 {
-	JSON config;
-
+    JSON config;
 	JSON user_config;
 
 	if (!config.open(CONFIG_PATH)) {
