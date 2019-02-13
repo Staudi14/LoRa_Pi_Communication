@@ -129,7 +129,7 @@ std::string JSON::getConfig()
         config.assign(std::istreambuf_iterator<char>(fconfig), std::istreambuf_iterator<char>());
 		
 #ifdef DEBUG
-       std::cout << config << std::endl;				//For debugging purposes
+       std::cout << config.c_str() << std::endl;				//For debugging purposes
 #endif
 		fconfig.close();
 
@@ -702,14 +702,14 @@ void JSON::saveJSON()
 	catch (const std::ifstream::failure& e)
 	{
 #ifdef DEBUG
-        std::cout << "File not found: " + path << std::endl;
+        std::cout << "File not found: " << path.c_str() << std::endl;
 #endif
 		throw;												//Pass exception to caller
 	}
 	catch (const std::exception&)
 	{
 #ifdef DEBUG
-        std::cout << "Something went wrong with: " + path << std::endl;
+        std::cout << "Something went wrong with: " << path.c_str() << std::endl;
 #endif
 		throw;												//Pass exception to caller
 	}
