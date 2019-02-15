@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 
 #include "LoRaClass.h"
+#include <stdio.h>
 
 //misc
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
@@ -89,11 +90,11 @@ LoRaClass::LoRaClass()
 
 	if (wiringPiSetupGpio())
 	{
-		cout << "Failed to setup GPIO" << endl;
+        std::cout << "Failed to setup GPIO" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	cout << "GPIO setup completed" << endl;
+    std::std::cout << "GPIO setup completed" << std::endl;
 
 	setPins(LORA_DEFAULT_SS_PIN, LORA_DEFAULT_RESET_PIN, LORA_DEFAULT_DIO0_PIN);
 
@@ -111,7 +112,7 @@ LoRaClass::LoRaClass()
 	//SPI
 	if (wiringPiSPISetup(LORA_DEFAULT_SPI, LORA_DEFAULT_SPI_FREQUENCY) == -1)			//SPI Mode 0
 	{
-		cout << "SPI couldn't be configured" << endl;
+        std::std::cout << "SPI couldn't be configured" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 				
@@ -120,7 +121,7 @@ LoRaClass::LoRaClass()
 	version = readRegister(REG_VERSION);								//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
-		cout << "Wrong module version!!" << endl;
+        std::std::cout << "Wrong module version!!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -162,12 +163,7 @@ LoRaClass::LoRaClass()
 
 LoRaClass::~LoRaClass()
 {
-	sleep();
-	char buffer[33];
-
-	sprintf(buffer, "gpio unexportall");
-
-	system(buffer);
+    end();
 }
 
 /*LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
@@ -200,7 +196,7 @@ LoRaClass::~LoRaClass()
 	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
-		cout << "Wrong module version!!" << endl;
+        std::std::cout << "Wrong module version!!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -255,7 +251,7 @@ void LoRaClass::begin()
 	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
-		cout << "Wrong module version!!" << endl;
+        std::cout << "Wrong module version!!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -287,9 +283,9 @@ void LoRaClass::end()
 	sleep();
 	char buffer[33];
 
-	sprintf(buffer, "gpio unexportall", _dio0);
+    printf(buffer, "gpio unexportall", _dio0);
 
-	system(buffer);
+    system(buffer);
 }
 
 int LoRaClass::beginPacket(int implicitHeader)
