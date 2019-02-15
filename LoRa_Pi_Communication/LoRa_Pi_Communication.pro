@@ -124,3 +124,7 @@ DISTFILES += \
     config.json \
     user_config.json \
     spdlog/fmt/bundled/LICENSE.rst
+
+#Added path to wiringPi
+LIBS += -L/usr/local/lib -lwiringPi
+INCLUDEPATH += /usr/local/include

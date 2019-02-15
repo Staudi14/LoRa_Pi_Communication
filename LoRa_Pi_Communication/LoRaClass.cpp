@@ -283,7 +283,7 @@ void LoRaClass::end()
 	sleep();
 	char buffer[33];
 
-    printf(buffer, "gpio unexportall", _dio0);
+    sprintf(buffer, "gpio unexportall", _dio0);
 
     system(buffer);
 }
