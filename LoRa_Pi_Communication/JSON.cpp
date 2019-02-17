@@ -1,9 +1,27 @@
-#include "JSON.h"
+/*************************************************************************
+This header file provides a useful class to retrieve data from a json file.
+Copyright (C) 2019  Patrik Staudenmayer
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
+#include "JSON.h"
+#define DEBUG
 
 
 JSON::JSON()
 {
+	conf.SetObject();
 }
 
 
@@ -19,6 +37,7 @@ void JSON::commentRemover()
 
 	sprintf(iter, "%s", config.c_str());
 
+	
 	for (unsigned int i = 0; i < config.length() - 1; i++) {
 		if (iter[i] == '/' && iter[i + 1] == '/') {
 			copy = false;
@@ -57,7 +76,6 @@ bool JSON::setPath(string fpath)
 		return false;
 	}
 }
-
 
 bool JSON::setPath(const char * fpath)
 {
@@ -102,18 +120,25 @@ string JSON::getConfig()
 {
 	fstream fconfig;
 	fconfig.open(path, ios::in);
+	
+	config.clear();
+	
 
 	if (fconfig.is_open()) {		//Testing if path is correct
 
 		config.assign(istreambuf_iterator<char>(fconfig), istreambuf_iterator<char>());
-		//cout << config << endl;				//For debugging purposes
-
+		
+#ifdef DEBUG
+		cout << config << endl;				//For debugging purposes
+#endif
 		fconfig.close();
 
-		commentRemover();
-
+		if (config.length() > 2)
+		{
+			commentRemover();
+		}		
+		
 		conf.Parse(config.c_str());
-
 
 		return string(config);
 	}
@@ -319,13 +344,13 @@ int JSON::getPAboostPin()
 {
 	if (conf.HasMember("pa_boost_pin"))
 	{
-		if (conf["pa_boost_pin"].IsInt())
+		if (conf["pa_boost_pin"].IsBool())
 		{
-			return conf["pa_boost_pin"].GetInt();
+			return (conf["pa_boost_pin"].GetBool()? 1 : 0);
 		}
 		else
 		{
-			cout << "pa_boost_pin is not int" << endl;
+			cout << "pa_boost_pin is not bool" << endl;
 			exit(EXIT_FAILURE);
 		}
 
@@ -349,18 +374,343 @@ std::string JSON::getMode()
 		}
 		else
 		{
-			cout << "pa_boost_pin is not int" << endl;
+			cout << "mode is not string" << endl;
 			exit(EXIT_FAILURE);
 		}
 
 	}
 	else
 	{
-		cout << "pa_boost_pin setting is missing" << endl;
+		cout << "mode setting is missing" << endl;
 		exit(EXIT_FAILURE);
 
 	}
 	return NULL;
 }
 
+void JSON::setSPI(int spi)
+{
+	if (conf.HasMember("spi"))											//spi value already exists
+	{
+		if (conf["spi"].IsInt())
+		{
+			conf["spi"].SetInt(spi);
+		}
+	}
+	else																//spi value does not exist already and must be created
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(spi);
 
+#ifdef DEBUG
+		std::cout << "SPI: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setSPI_frequency(long int frequency)
+{
+	if (conf.HasMember("spi_frequency"))											
+	{
+		if (conf["spi_frequency"].IsInt64())
+		{
+			conf["spi_frequency"].SetInt64(frequency);
+		}
+	}
+	else																
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(frequency);
+
+#ifdef DEBUG
+		std::cout << "spi_frequency: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("spi_frequency", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setSS_pin(int ss)
+{
+	if (conf.HasMember("ss_pin"))
+	{
+		if (conf["ss_pin"].IsInt())
+		{
+			conf["ss_pin"].SetInt(ss);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(ss);
+
+#ifdef DEBUG
+		std::cout << "ss_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("ss_pin", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setResetPin(int reset)
+{
+	if (conf.HasMember("reset_pin"))
+	{
+		if (conf["reset_pin"].IsInt())
+		{
+			conf["reset_pin"].SetInt(reset);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(reset);
+
+#ifdef DEBUG
+		std::cout << "reset_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("reset_pin", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setDIO0_pin(int dio0)
+{
+	if (conf.HasMember("dio0_pin"))
+	{
+		if (conf["dio0_pin"].IsInt())
+		{
+			conf["dio0_pin"].SetInt(dio0);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(dio0);
+
+#ifdef DEBUG
+		std::cout << "dio0_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("dio0_pin", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setFrequency(long int frequency)
+{
+	if (conf.HasMember("frequency"))
+	{
+		if (conf["frequency"].IsInt64())
+		{
+			conf["frequency"].SetInt64(frequency);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt64(frequency);
+
+#ifdef DEBUG
+		std::cout << "frequency: " << spiSetter.GetInt64() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("frequency", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setPower(int power)
+{
+	if (conf.HasMember("power"))
+	{
+		if (conf["power"].IsInt())
+		{
+			conf["power"].SetInt(power);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(power);
+
+#ifdef DEBUG
+		std::cout << "power: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("power", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setRFO_pin(int rfo)
+{
+	if (conf.HasMember("rfo_pin"))
+	{
+		if (conf["rfo_pin"].IsInt())
+		{
+			conf["rfo_pin"].SetInt(rfo);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetInt(rfo);
+
+#ifdef DEBUG
+		std::cout << "rfo_pin: " << spiSetter.GetInt() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("rfo_pin", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setPAboostPin(bool paBoost)
+{
+	if (conf.HasMember("pa_boost_pin"))
+	{
+		if (conf["pa_boost_pin"].IsBool())
+		{
+			conf["pa_boost_pin"].SetBool(paBoost);
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetBool(paBoost);
+
+#ifdef DEBUG
+		std::cout << "pa_boost_pin: " << spiSetter.GetBool() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("pa_boost_pin", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+void JSON::setMode(std::string mode)
+{
+	if (conf.HasMember("mode"))
+	{
+		if (conf["mode"].IsString())
+		{
+			conf["mode"].SetString(mode.c_str(), conf.GetAllocator());
+		}
+	}
+	else
+	{
+		rapidjson::Value spiSetter;
+		spiSetter.SetString(mode.c_str(), conf.GetAllocator());
+
+#ifdef DEBUG
+		std::cout << "mode: " << spiSetter.GetString() << endl;
+#endif // DEBUG
+
+		conf.GetObject().AddMember("mode", spiSetter, conf.GetAllocator());
+	}
+
+	saveJSON();
+}
+
+bool JSON::hasSPI()
+{
+	return conf.HasMember("spi");
+}
+
+bool JSON::hasSPI_frequency()
+{
+	return conf.HasMember("spi_frequency");
+}
+
+bool JSON::hasSS()
+{
+	return conf.HasMember("ss_pin");
+}
+
+bool JSON::hasReset()
+{
+	return conf.HasMember("reset_pin");
+}
+
+bool JSON::hasDIO0()
+{
+	return conf.HasMember("dio0_pin");
+}
+
+bool JSON::hasFrequency()
+{
+	return conf.HasMember("frequency");
+}
+
+bool JSON::hasPower()
+{
+	return conf.HasMember("power");
+}
+
+bool JSON::hasRFO()
+{
+	return conf.HasMember("rfo_pin");
+}
+
+bool JSON::hasPAboost()
+{
+	return conf.HasMember("pa_boost_pin");
+}
+
+bool JSON::hasMode()
+{
+	return conf.HasMember("mode");
+}
+
+void JSON::saveJSON()
+{
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	std::fstream output;
+
+	conf.Accept(writer);
+
+	
+	
+	try
+	{
+#ifdef DEBUG
+		std::cout << buffer.GetString() << endl;
+#endif
+		output.open(path.c_str(), std::ios::out | std::ios::trunc);
+
+		output << buffer.GetString();
+
+		output.close();
+	}
+	catch (const std::ifstream::failure& e)
+	{
+#ifdef DEBUG
+		std::cout << "File not found: " + path << endl;
+#endif
+		throw;												//Pass exception to caller
+	}
+	catch (const std::exception&)
+	{
+#ifdef DEBUG
+		std::cout << "Something went wrong with: " + path << endl;
+#endif
+		throw;												//Pass exception to caller
+	}
+}

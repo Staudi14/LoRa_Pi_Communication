@@ -1,3 +1,21 @@
+/*************************************************************************
+This library provides a class to interface with an Semtech SX12xx chip.
+Copyright (C) 2019  Patrik Staudenmayer
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
+
 #pragma once
 /*
 This Programm uses the BCM pin numbering for the Raspberry Pi
@@ -22,8 +40,8 @@ using namespace std;
 #define LORA_DEFAULT_FREQUENCY		868e6
 #define LORA_DEFAULT_POWER			17					//17dBm
 
-#define PA_OUTPUT_RFO_PIN			0
-#define PA_OUTPUT_PA_BOOST_PIN		5
+#define PA_OUTPUT_RFO_PIN			0					//represents false
+#define PA_OUTPUT_PA_BOOST_PIN		1					//represents true
 
 
 class LoRaClass
@@ -44,7 +62,7 @@ public:
 
 	int beginPacket(int implicitHeader = false);
 	int endPacket(bool async = false);
-	void print(std::string & input);
+	void print(std::string input);
 
 	int parsePacket(uint8_t size = 0);
 	int packetRssi();
@@ -67,7 +85,8 @@ public:
 	void idle();
 	void sleep();
 
-	void setTxPower(int level, int outputPin = PA_OUTPUT_PA_BOOST_PIN);
+	void setTxPower(int level, int outputPin);
+	void setTxPower(int level);
 	void setFrequency(long frequency);
 	void setSpreadingFactor(int sf);
 	void setSignalBandwidth(long sbw);
@@ -86,6 +105,10 @@ public:
 	void setPins(int ss, int reset, int dio0);
 	void setSPIFrequency(uint32_t frequency);
 	void setSPIPort(unsigned int port);
+
+	void setSS(int ss);
+	void setReset(int reset);
+	void setDIO0(int dio0);
 
 #ifdef DUMPREG
 	void dumpRegisters(Stream& out);
@@ -122,6 +145,7 @@ private:
 	int _spiFrequency;
 	int _spiPort;
 	int _power;
+	int _pa_rfo_pin;
 };
 
 extern LoRaClass LoRa;
