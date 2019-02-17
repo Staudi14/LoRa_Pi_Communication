@@ -10,6 +10,9 @@ CONFIG += debug
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+#Added path to standard c includes as well as wiringPi
+INCLUDEPATH += /usr/include
+
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -124,7 +127,3 @@ DISTFILES += \
     config.json \
     user_config.json \
     spdlog/fmt/bundled/LICENSE.rst
-
-#Added path to wiringPi
-LIBS += -L/usr/local/lib -lwiringPi
-INCLUDEPATH += /usr/local/include
