@@ -11,7 +11,7 @@ CONFIG += debug
 DEFINES += QT_DEPRECATED_WARNINGS
 
 #Added path to standard c includes as well as wiringPi
-INCLUDEPATH += /usr/include
+#INCLUDEPATH += /usr/include
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -21,10 +21,7 @@ INCLUDEPATH += /usr/include
 SOURCES += \
         main.cpp \
     JSON.cpp \
-    LoRaClass.cpp \
-    JSON.cpp \
-    LoRaClass.cpp \
-    main.cpp
+    LoRaClass.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

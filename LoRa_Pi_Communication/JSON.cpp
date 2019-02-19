@@ -160,6 +160,7 @@ int JSON::getSPI()
 		{
             std::cout << "spi is not int" << std::endl;
 			exit(EXIT_FAILURE);
+           // return 0;
 		}
 
 	}
@@ -167,9 +168,10 @@ int JSON::getSPI()
 	{
         std::cout << "spi setting is missing" << std::endl;
 		exit(EXIT_FAILURE);
+       // return 0;
 
 	}
-	return 0;
+    //return 0;
 }
 
 long int JSON::getSPI_frequency()
@@ -193,7 +195,7 @@ long int JSON::getSPI_frequency()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 int JSON::getSS_pin()
@@ -217,7 +219,7 @@ int JSON::getSS_pin()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 int JSON::getResetPin()
@@ -241,7 +243,7 @@ int JSON::getResetPin()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 int JSON::getDIO0_pin()
@@ -265,7 +267,7 @@ int JSON::getDIO0_pin()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 long int JSON::getFrequency()
@@ -289,7 +291,7 @@ long int JSON::getFrequency()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 int JSON::getPower()
@@ -313,7 +315,7 @@ int JSON::getPower()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 int JSON::getRFO_pin()
@@ -337,7 +339,7 @@ int JSON::getRFO_pin()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 int JSON::getPAboostPin()
@@ -361,7 +363,7 @@ int JSON::getPAboostPin()
 		exit(EXIT_FAILURE);
 
 	}
-	return 0;
+    //return 0;
 }
 
 std::string JSON::getMode()
@@ -385,7 +387,7 @@ std::string JSON::getMode()
 		exit(EXIT_FAILURE);
 
 	}
-	return NULL;
+    return nullptr;
 }
 
 void JSON::setSPI(int spi)
@@ -685,8 +687,6 @@ void JSON::saveJSON()
 	std::fstream output;
 
 	conf.Accept(writer);
-
-	
 	
 	try
 	{
@@ -699,7 +699,7 @@ void JSON::saveJSON()
 
 		output.close();
 	}
-	catch (const std::ifstream::failure& e)
+    catch (const std::ifstream::failure&)
 	{
 #ifdef DEBUG
         std::cout << "File not found: " << path.c_str() << std::endl;

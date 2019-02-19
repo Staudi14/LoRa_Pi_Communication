@@ -17,7 +17,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 
 #include "LoRaClass.h"
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
 
 //misc
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
@@ -327,7 +329,7 @@ int LoRaClass::endPacket(bool async)
 
 	if (async) {
 		// grace time is required for the radio
-		delayMicroseconds(150);
+        delayMicroseconds(150);
 	}
 	else {
 		// wait for TX done
