@@ -11,7 +11,8 @@ CONFIG += debug
 DEFINES += QT_DEPRECATED_WARNINGS
 
 #Added path to standard c includes as well as wiringPi
-#INCLUDEPATH += /usr/include
+INCLUDEPATH += /usr/include
+LIBS += -L/usr/local/lib -lwiringPi
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.

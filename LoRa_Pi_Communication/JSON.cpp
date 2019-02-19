@@ -129,6 +129,7 @@ std::string JSON::getConfig()
         config.assign(std::istreambuf_iterator<char>(fconfig), std::istreambuf_iterator<char>());
 		
 #ifdef DEBUG
+       std::cout << path.c_str() << std::endl;
        std::cout << config.c_str() << std::endl;				//For debugging purposes
 #endif
 		fconfig.close();
