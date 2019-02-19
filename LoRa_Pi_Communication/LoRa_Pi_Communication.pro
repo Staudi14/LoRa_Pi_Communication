@@ -22,7 +22,8 @@ LIBS += -L/usr/lib -lwiringPi
 SOURCES += \
         main.cpp \
     JSON.cpp \
-    LoRaClass.cpp
+    LoRaClass.cpp \
+    logutils.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -119,7 +120,8 @@ HEADERS += \
     spdlog/tweakme.h \
     spdlog/version.h \
     JSON.h \
-    LoRaClass.h
+    LoRaClass.h \
+    logutils.h
 
 DISTFILES += \
     config.json \
