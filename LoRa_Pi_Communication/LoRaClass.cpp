@@ -293,7 +293,7 @@ void LoRaClass::end()
 	sleep();
 	char buffer[33];
 
-    sprintf(buffer, "gpio unexportall", _dio0);
+    sprintf(buffer, "gpio unexportall");
 
     system(buffer);
 }
@@ -563,17 +563,14 @@ void LoRaClass::sleep()
 
 //Output Pin only true(1) or false(0)
 //
-void LoRaClass::setTxPower(int level, int outputPin)
+void LoRaClass::setTxPower(unsigned int level, int outputPin)
 {
 	_power = level;
 	_pa_rfo_pin = outputPin;
 
 	if (PA_OUTPUT_RFO_PIN == _pa_rfo_pin) {
 		// RFO
-		if (_power < 0) {
-			_power = 0;
-		}
-		else if (_power > 14) {
+        if(_power > 14) {
 			_power = 14;
 		}
 
@@ -606,17 +603,14 @@ void LoRaClass::setTxPower(int level, int outputPin)
 	}
 }
 
-void LoRaClass::setTxPower(int level)
+void LoRaClass::setTxPower(unsigned int level)
 {
 	_power = level;
 	
 
 	if (PA_OUTPUT_RFO_PIN == _pa_rfo_pin) {
 		// RFO
-		if (_power < 0) {
-			_power = 0;
-		}
-		else if (_power > 14) {
+        if (_power > 14) {
 			_power = 14;
 		}
 

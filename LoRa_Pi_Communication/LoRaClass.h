@@ -84,8 +84,8 @@ public:
 	void idle();
 	void sleep();
 
-	void setTxPower(int level, int outputPin);
-	void setTxPower(int level);
+    void setTxPower(unsigned int level, int outputPin);
+    void setTxPower(unsigned int level);
 	void setFrequency(long frequency);
 	void setSpreadingFactor(int sf);
 	void setSignalBandwidth(long sbw);
