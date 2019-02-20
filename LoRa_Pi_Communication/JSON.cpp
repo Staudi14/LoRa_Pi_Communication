@@ -100,6 +100,9 @@ bool JSON::open(std::string fpath)
 {
 	if (setPath(fpath)) {
 		getConfig();
+
+        qInfo("config: %s loaded", fpath.c_str());
+
 		return true;
 	}
 	else {
@@ -113,6 +116,9 @@ bool JSON::open(const char * fpath)
 {
 	if (setPath(fpath)) {
 		getConfig();
+
+        qInfo("config: %s loaded", fpath);
+
 		return true;
 	}
 	else {
