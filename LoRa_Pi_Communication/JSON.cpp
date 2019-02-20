@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 #include "JSON.h"
+#include <QtGlobal>
+
+
 #define DEBUG
 
 
@@ -100,6 +103,8 @@ bool JSON::open(std::string fpath)
 		return true;
 	}
 	else {
+
+        qWarning("config: %s not found", fpath.c_str());
 		return false;
 	}
 }
@@ -111,6 +116,7 @@ bool JSON::open(const char * fpath)
 		return true;
 	}
 	else {
+        qWarning("config: %s not found", fpath);
 		return false;
 	}
 
@@ -145,6 +151,7 @@ std::string JSON::getConfig()
 	}
 	else
 	{
+        qCritical("config: %s not valid", path.c_str());
 		return NULL;
 	}
 }
@@ -159,18 +166,21 @@ int JSON::getSPI()
 		}
 		else
 		{
+
+#ifdef DEBUG
             std::cout << "spi is not int" << std::endl;
-			exit(EXIT_FAILURE);
-           // return 0;
+#endif
+
+            qFatal("config: %s, spi is not int", path.c_str());
 		}
 
 	}
 	else
 	{
+#ifdef DEBUG
         std::cout << "spi setting is missing" << std::endl;
-		exit(EXIT_FAILURE);
-       // return 0;
-
+#endif
+        qFatal("config: %s, spi is missing", path.c_str());
 	}
     //return 0;
 }
@@ -185,15 +195,19 @@ long int JSON::getSPI_frequency()
 		}
 		else
 		{
+#ifdef DEBUG
             std::cout << "spi_frequency is not int64" << std::endl;
-			exit(EXIT_FAILURE);
+#endif
+            qFatal("config: %s, spi_frequency is not long int (int64)", path.c_str());
 		}
 
 	}
 	else
 	{
+#ifdef DEBUG
         std::cout << "spi_frequency setting is missing" << std::endl;
-		exit(EXIT_FAILURE);
+#endif
+        qFatal("config: %s, spi_frequency is missing", path.c_str());
 
 	}
     //return 0;
@@ -209,20 +223,25 @@ int JSON::getSS_pin()
 		}
 		else
 		{
+#ifdef DEBUG
             std::cout << "ss_pin is not int" << std::endl;
-			exit(EXIT_FAILURE);
+#endif
+            qFatal("config: %s, ss_pin is not int", path.c_str());
 		}
 
 	}
 	else
 	{
+#ifdef DEBUG
         std::cout << "ss_pin setting is missing" << std::endl;
-		exit(EXIT_FAILURE);
+#endif
+        qFatal("config: %s, ss_pin is missing", path.c_str());
 
 	}
     //return 0;
 }
 
+//TODO
 int JSON::getResetPin()
 {
 	if (conf.HasMember("reset_pin"))

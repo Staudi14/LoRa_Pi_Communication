@@ -21,6 +21,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <cstdlib>
 #include <sstream>
 
+#include <QtGlobal>
+
+#define DEBUG       //Enable debug messages
+
 //misc
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 #define bitSet(value, bit) ((value) |= (1UL << (bit)))
@@ -253,7 +257,11 @@ void LoRaClass::begin()
 	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
+        qCritical("lora: Wrong module version");
+#ifdef DEBUG
         std::cout << "Wrong module version!!" << std::endl;
+#endif
+
 		exit(EXIT_FAILURE);
 	}
 

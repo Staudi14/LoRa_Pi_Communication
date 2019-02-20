@@ -10,8 +10,7 @@ CONFIG += debug
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
-#Added path to standard c includes as well as wiringPi
-INCLUDEPATH += /usr/include
+# Added wiringPi to compilation
 LIBS += -L/usr/lib -lwiringPi
 
 # You can also make your code fail to compile if it uses deprecated APIs.
