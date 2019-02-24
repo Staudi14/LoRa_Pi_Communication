@@ -293,7 +293,7 @@ void LoRaClass::end()
 	sleep();
 	char buffer[33];
 
-    sprintf(buffer, "gpio -g unexport %x", _dio0);
+    sprintf(buffer, "gpio unexportall", _dio0);
 
     system(buffer);
 }
@@ -308,7 +308,7 @@ int LoRaClass::beginPacket(int implicitHeader)
 	{
 		char buffer[33];
 
-		sprintf(buffer, "gpio -g unexport %x", _dio0);
+        sprintf(buffer, "gpio edge %d none", _dio0);
 
 		system(buffer);
 	}
@@ -527,7 +527,7 @@ void LoRaClass::onReceive(void(*callback)(int))									//callback wird im handl
 	{
 		char buffer[33];
 
-		sprintf(buffer, "gpio -g unexport %x", _dio0);
+        sprintf(buffer, "gpio edge %d none", _dio0);
 
 		system(buffer);
 
