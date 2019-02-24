@@ -158,7 +158,7 @@ std::string JSON::getConfig()
 	else
 	{
         qCritical("config: %s not valid", path.c_str());
-		return NULL;
+        return nullptr;
 	}
 }
 
