@@ -17,6 +17,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 
 #include "LoRaClass.h"
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
+
+#include <QtGlobal>
+
+#define DEBUG       //Enable debug messages
 
 //misc
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
@@ -89,11 +96,11 @@ LoRaClass::LoRaClass()
 
 	if (wiringPiSetupGpio())
 	{
-		cout << "Failed to setup GPIO" << endl;
+        std::cout << "Failed to setup GPIO" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	cout << "GPIO setup completed" << endl;
+    std::std::cout << "GPIO setup completed" << std::endl;
 
 	setPins(LORA_DEFAULT_SS_PIN, LORA_DEFAULT_RESET_PIN, LORA_DEFAULT_DIO0_PIN);
 
@@ -111,7 +118,7 @@ LoRaClass::LoRaClass()
 	//SPI
 	if (wiringPiSPISetup(LORA_DEFAULT_SPI, LORA_DEFAULT_SPI_FREQUENCY) == -1)			//SPI Mode 0
 	{
-		cout << "SPI couldn't be configured" << endl;
+        std::std::cout << "SPI couldn't be configured" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 				
@@ -120,7 +127,7 @@ LoRaClass::LoRaClass()
 	version = readRegister(REG_VERSION);								//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
-		cout << "Wrong module version!!" << endl;
+        std::std::cout << "Wrong module version!!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -162,12 +169,7 @@ LoRaClass::LoRaClass()
 
 LoRaClass::~LoRaClass()
 {
-	sleep();
-	char buffer[33];
-
-	sprintf(buffer, "gpio unexportall");
-
-	system(buffer);
+    end();
 }
 
 /*LoRaClass::LoRaClass(int ss, int reset, int dio0, long frequency, int spi, long spi_frequency, int power)
@@ -200,7 +202,7 @@ LoRaClass::~LoRaClass()
 	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
-		cout << "Wrong module version!!" << endl;
+        std::std::cout << "Wrong module version!!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -255,7 +257,11 @@ void LoRaClass::begin()
 	version = readRegister(REG_VERSION);			//If version doesn't match terminate the programm and print out an error
 	if (version != 0x12)
 	{
-		cout << "Wrong module version!!" << endl;
+        qCritical("lora: Wrong module version");
+#ifdef DEBUG
+        std::cout << "Wrong module version!!" << std::endl;
+#endif
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -287,9 +293,9 @@ void LoRaClass::end()
 	sleep();
 	char buffer[33];
 
-	sprintf(buffer, "gpio unexportall", _dio0);
+    sprintf(buffer, "gpio -g unexport %x", _dio0);
 
-	system(buffer);
+    system(buffer);
 }
 
 int LoRaClass::beginPacket(int implicitHeader)
@@ -331,7 +337,7 @@ int LoRaClass::endPacket(bool async)
 
 	if (async) {
 		// grace time is required for the radio
-		delayMicroseconds(150);
+        delayMicroseconds(150);
 	}
 	else {
 		// wait for TX done
@@ -557,17 +563,14 @@ void LoRaClass::sleep()
 
 //Output Pin only true(1) or false(0)
 //
-void LoRaClass::setTxPower(int level, int outputPin)
+void LoRaClass::setTxPower(unsigned int level, int outputPin)
 {
 	_power = level;
 	_pa_rfo_pin = outputPin;
 
 	if (PA_OUTPUT_RFO_PIN == _pa_rfo_pin) {
 		// RFO
-		if (_power < 0) {
-			_power = 0;
-		}
-		else if (_power > 14) {
+        if(_power > 14) {
 			_power = 14;
 		}
 
@@ -600,17 +603,14 @@ void LoRaClass::setTxPower(int level, int outputPin)
 	}
 }
 
-void LoRaClass::setTxPower(int level)
+void LoRaClass::setTxPower(unsigned int level)
 {
 	_power = level;
 	
 
 	if (PA_OUTPUT_RFO_PIN == _pa_rfo_pin) {
 		// RFO
-		if (_power < 0) {
-			_power = 0;
-		}
-		else if (_power > 14) {
+        if (_power > 14) {
 			_power = 14;
 		}
 

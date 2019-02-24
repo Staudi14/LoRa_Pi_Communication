@@ -23,9 +23,8 @@ This Programm uses the BCM pin numbering for the Raspberry Pi
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include <iostream>
-#include <sstream>
 
-using namespace std;
+//using namespace std;
 
 //#define DUMPREG										//activates not functioning methode dumpRegesiters
 
@@ -85,8 +84,8 @@ public:
 	void idle();
 	void sleep();
 
-	void setTxPower(int level, int outputPin);
-	void setTxPower(int level);
+    void setTxPower(unsigned int level, int outputPin);
+    void setTxPower(unsigned int level);
 	void setFrequency(long frequency);
 	void setSpreadingFactor(int sf);
 	void setSignalBandwidth(long sbw);
@@ -133,19 +132,19 @@ private:
 	static void onDio0Rise();
 
 private:
-	int _ss;
-	int _reset;
-	int _dio0;
-	long _frequency;
-	int _packetIndex;
-	int _implicitHeaderMode;
+    unsigned int _ss;
+    unsigned int _reset;
+    unsigned int _dio0;
+    unsigned long _frequency;
+    unsigned int _packetIndex;
+    unsigned int _implicitHeaderMode;
 	void(*_onReceive)(int);
 
 	bool _interruptState;
-	int _spiFrequency;
-	int _spiPort;
-	int _power;
-	int _pa_rfo_pin;
+    unsigned int _spiFrequency;
+    unsigned int _spiPort;
+    unsigned int _power;
+    unsigned int _pa_rfo_pin;
 };
 
 extern LoRaClass LoRa;
