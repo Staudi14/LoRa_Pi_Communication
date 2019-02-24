@@ -20,6 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <iostream>
 #include <string>
 
+#include <csignal>
+
 #include <QtGlobal>
 
 #include "LoRaClass.h"
@@ -34,14 +36,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using namespace std;
 
 
-
+//Initializer
 void initLoRa(JSON &config, JSON &user_config);
+
+//Signal handlers
+void handlerSIGTERM(int signum);
+void handlerSIGABRT(int signum);
+void handlerSIGINT(int signum);
 
 
 int main(void)
 {
     JSON config;
 	JSON user_config;
+
+    //Registrate signal handler
+    std::signal(SIGTERM, handlerSIGTERM);
+    std::signal(SIGABRT, handlerSIGABRT);
+    std::signal(SIGINT, handlerSIGINT);
+
 
     //Initializing logger
     if(!logutils::initLogging())
@@ -257,4 +270,23 @@ void initLoRa(JSON &config, JSON &user_config)
 
 }
 
+void handlerSIGTERM(int signum)
+{
+    //Cleaning up LoRa
+    LoRa.end();
+    exit(signum);
+}
 
+void handlerSIGABRT(int signum)
+{
+    //Cleaning up LoRa
+    LoRa.end();
+    exit(signum);
+}
+
+void handlerSIGINT(int signum)
+{
+    //Cleaning up LoRa
+    LoRa.end();
+    exit(signum);
+}
