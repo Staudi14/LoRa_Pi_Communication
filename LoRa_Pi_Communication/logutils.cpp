@@ -24,70 +24,78 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <QDir>
 #include <QFileInfoList>
+#include <QMutex>
+#include <QMutexLocker>
 #include <iostream>
 
 namespace logutils
 {
-  static QString logFileName;
+static QString logFileName;
 
-  void initLogFileName()
+void initLogFileName()
+{
+logFileName = QString(logFolderName + "/Log_%1__%2.txt")
+              .arg(QDate::currentDate().toString("yyyy_MM_dd"))
+              .arg(QTime::currentTime().toString("hh_mm_ss_zzz"));
+}
+
+/**
+* @brief deletes old log files, only the last ones are kept
+*/
+void deleteOldLogs()
+{
+QDir dir;
+dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+dir.setSorting(QDir::Time | QDir::Reversed);
+dir.setPath(logFolderName);
+
+QFileInfoList list = dir.entryInfoList();
+if (list.size() <= LOGFILES_COUNT)
+{
+  return; //no files to delete
+} else
+{
+  for (int i = 0; i < (list.size() - LOGFILES_COUNT); i++)
   {
-    logFileName = QString(logFolderName + "/Log_%1__%2.txt")
-                  .arg(QDate::currentDate().toString("yyyy_MM_dd"))
-                  .arg(QTime::currentTime().toString("hh_mm_ss_zzz"));
+    QString path = list.at(i).absoluteFilePath();
+    QFile file(path);
+    file.remove();
+  }
+}
+}
+
+bool initLogging()
+{
+  // Create folder for LOGFILES if not exists
+  if(!QDir(logFolderName).exists())
+  {
+    QDir().mkdir(logFolderName);
   }
 
-  /**
-   * @brief deletes old log files, only the last ones are kept
-   */
-  void deleteOldLogs()
-  {
-    QDir dir;
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    dir.setSorting(QDir::Time | QDir::Reversed);
-    dir.setPath(logFolderName);
+  deleteOldLogs(); //delete old log files
+  initLogFileName(); //create the logfile name
 
-    QFileInfoList list = dir.entryInfoList();
-    if (list.size() <= LOGFILES_COUNT)
-    {
-      return; //no files to delete
-    } else
-    {
-      for (int i = 0; i < (list.size() - LOGFILES_COUNT); i++)
-      {
-        QString path = list.at(i).absoluteFilePath();
-        QFile file(path);
-        file.remove();
-      }
-    }
+  QFile outFile(logFileName);
+  if(outFile.open(QIODevice::WriteOnly | QIODevice::Append))
+  {
+    qInstallMessageHandler(logutils::myMessageHandler);
+    return true;
   }
-
-  bool initLogging()
+  else
   {
-      // Create folder for LOGFILES if not exists
-      if(!QDir(logFolderName).exists())
-      {
-        QDir().mkdir(logFolderName);
-      }
-
-      deleteOldLogs(); //delete old log files
-      initLogFileName(); //create the logfile name
-
-      QFile outFile(logFileName);
-      if(outFile.open(QIODevice::WriteOnly | QIODevice::Append))
-      {
-        qInstallMessageHandler(logutils::myMessageHandler);
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+    return false;
   }
+}
 
-  void myMessageHandler(QtMsgType type, const QMessageLogContext &context,
-                            const QString& msg)
-  {
+void myMessageHandler(QtMsgType type, const QMessageLogContext &context,
+                        const QString& msg)
+{
+    //Making logging handler threadsafe
+    static QMutex mutex;
+    QMutexLocker lock(&mutex);              //Lock handler. Gets unlocked when variable is destroyed
+
+
+
     //check file size and if needed create new log!
     {
       QFile outFileCheck(logFileName);
@@ -103,7 +111,6 @@ namespace logutils
     QFile outFile(logFileName);
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
-    ts << msg << endl;
 
     switch (type) {
         case QtDebugMsg:
@@ -127,5 +134,5 @@ namespace logutils
                << " (" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
             abort();
         }
-  }
 }
+} //end of namespace logutils
