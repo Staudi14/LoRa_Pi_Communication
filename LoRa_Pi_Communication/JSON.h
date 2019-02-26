@@ -16,79 +16,77 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 #pragma once
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 #include <fstream>
 #include <iostream>
 #include <type_traits>
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 
-
-
-class JSON
-{
+class JSON {
 public:
-	JSON();
-	~JSON();
+  JSON();
+  ~JSON();
 
 private:
-	std::string config;
-	std::string path;
-	rapidjson::Document conf;
+  std::string config;
+  std::string path;
+  rapidjson::Document conf;
 
-private:
-	void commentRemover();
+  enum TYPES { STRING, INT, INT64, FLOAT, BOOL };
 
+  void commentRemover();
 
 public:
-	bool setPath(std::string fpath);
-	bool setPath(const char *fpath);
+  bool setPath(std::string fpath);
+  bool setPath(const char *fpath);
 
-	bool open(std::string fpath);
-	bool open(const char *fpath);
+  bool open(std::string fpath);
+  bool open(const char *fpath);
 
-    std::string getConfig();
+  std::string getConfig();
 
+  // Getter functions
 
-	//Getter functions
+  std::string getJSON(char *key, TYPES type);
 
-	int getSPI();
-	long int getSPI_frequency();
-	int getSS_pin();
-	int getResetPin();
-	int getDIO0_pin();
-	long int getFrequency();
-	int getPower();
-	int getRFO_pin();
-	int getPAboostPin();
-	std::string getMode();
+  int getSPI();
+  long int getSPI_frequency();
+  int getSS_pin();
+  int getResetPin();
+  int getDIO0_pin();
+  long int getFrequency();
+  int getPower();
+  int getRFO_pin();
+  int getPAboostPin();
+  std::string getMode();
 
-	//Setter functions
+  // Setter functions
 
-	void setSPI(int spi);
-	void setSPI_frequency(long int frequency);
-	void setSS_pin(int ss);
-	void setResetPin(int reset);
-	void setDIO0_pin(int dio0);
-	void setFrequency(long int frequency);
-	void setPower(int power);
-	void setRFO_pin(int rfo);
-	void setPAboostPin(bool paBoost);
-	void setMode(std::string mode);
+  void setSPI(int spi);
+  void setSPI_frequency(long int frequency);
+  void setSS_pin(int ss);
+  void setResetPin(int reset);
+  void setDIO0_pin(int dio0);
+  void setFrequency(long int frequency);
+  void setPower(int power);
+  void setRFO_pin(int rfo);
+  void setPAboostPin(bool paBoost);
+  void setMode(std::string mode);
 
-	//Assert that parameter exists
+  // Assert that parameter exists
 
-	bool hasSPI();
-	bool hasSPI_frequency();
-	bool hasSS();
-	bool hasReset();
-	bool hasDIO0();
-	bool hasFrequency();
-	bool hasPower();
-	bool hasRFO();
-	bool hasPAboost();
-	bool hasMode();
+  bool hasSPI();
+  bool hasSPI_frequency();
+  bool hasSS();
+  bool hasReset();
+  bool hasDIO0();
+  bool hasFrequency();
+  bool hasPower();
+  bool hasRFO();
+  bool hasPAboost();
+  bool hasMode();
 
-	//Saving
-	void saveJSON();
+  // Saving
+  void saveJSON();
 };

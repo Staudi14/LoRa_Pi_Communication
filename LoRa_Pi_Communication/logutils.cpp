@@ -18,121 +18,118 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "logutils.h"
 
-#include <QTime>
-#include <QFile>
-#include <QFileInfo>
 #include <QDebug>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QFileInfoList>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QTime>
 #include <iostream>
 
-namespace logutils
-{
+namespace logutils {
 static QString logFileName;
 
-void initLogFileName()
-{
-logFileName = QString(logFolderName + "/Log_%1__%2.txt")
-              .arg(QDate::currentDate().toString("yyyy_MM_dd"))
-              .arg(QTime::currentTime().toString("hh_mm_ss_zzz"));
+void initLogFileName() {
+  logFileName = QString(logFolderName + "/Log_%1__%2.txt")
+                    .arg(QDate::currentDate().toString("yyyy_MM_dd"))
+                    .arg(QTime::currentTime().toString("hh_mm_ss_zzz"));
 }
 
 /**
-* @brief deletes old log files, only the last ones are kept
-*/
-void deleteOldLogs()
-{
-QDir dir;
-dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-dir.setSorting(QDir::Time | QDir::Reversed);
-dir.setPath(logFolderName);
+ * @brief deletes old log files, only the last ones are kept
+ */
+void deleteOldLogs() {
+  QDir dir;
+  dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+  dir.setSorting(QDir::Time | QDir::Reversed);
+  dir.setPath(logFolderName);
 
-QFileInfoList list = dir.entryInfoList();
-if (list.size() <= LOGFILES_COUNT)
-{
-  return; //no files to delete
-} else
-{
-  for (int i = 0; i < (list.size() - LOGFILES_COUNT); i++)
-  {
-    QString path = list.at(i).absoluteFilePath();
-    QFile file(path);
-    file.remove();
+  QFileInfoList list = dir.entryInfoList();
+  if (list.size() <= LOGFILES_COUNT) {
+    return; // no files to delete
+  } else {
+    for (int i = 0; i < (list.size() - LOGFILES_COUNT); i++) {
+      QString path = list.at(i).absoluteFilePath();
+      QFile file(path);
+      file.remove();
+    }
   }
 }
-}
 
-bool initLogging()
-{
+bool initLogging() {
   // Create folder for LOGFILES if not exists
-  if(!QDir(logFolderName).exists())
-  {
+  if (!QDir(logFolderName).exists()) {
     QDir().mkdir(logFolderName);
   }
 
-  deleteOldLogs(); //delete old log files
-  initLogFileName(); //create the logfile name
+  deleteOldLogs();   // delete old log files
+  initLogFileName(); // create the logfile name
 
   QFile outFile(logFileName);
-  if(outFile.open(QIODevice::WriteOnly | QIODevice::Append))
-  {
+  if (outFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
     qInstallMessageHandler(logutils::myMessageHandler);
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &context,
-                        const QString& msg)
-{
-    //Making logging handler threadsafe
-    static QMutex mutex;
-    QMutexLocker lock(&mutex);              //Lock handler. Gets unlocked when variable is destroyed
+                      const QString &msg) {
+  // Making logging handler threadsafe
+  static QMutex mutex;
+  QMutexLocker lock(
+      &mutex); // Lock handler. Gets unlocked when variable is destroyed
 
+  // check file size and if needed create new log!
+  {
+    QFile outFileCheck(logFileName);
+    long long size = outFileCheck.size();
 
-
-    //check file size and if needed create new log!
+    if (size > LOGSIZE) // check current log size
     {
-      QFile outFileCheck(logFileName);
-      long long size = outFileCheck.size();
-
-      if (size > LOGSIZE) //check current log size
-      {
-        deleteOldLogs();
-        initLogFileName();
-      }
+      deleteOldLogs();
+      initLogFileName();
     }
+  }
 
-    QFile outFile(logFileName);
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream ts(&outFile);
+  QFile outFile(logFileName);
+  outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+  QTextStream ts(&outFile);
 
-    switch (type) {
-        case QtDebugMsg:
-            ts << QDate::currentDate().toString("yyyy_MM_dd") << "  " << QTime::currentTime().toString("hh_mm_ss_zzz") << "  " << "Debug: " << msg
-               << " (" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
-            break;
-        case QtInfoMsg:
-            ts << QDate::currentDate().toString("yyyy_MM_dd") << "  " << QTime::currentTime().toString("hh_mm_ss_zzz") << "  " << "Info: " << msg
-               << " (" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
-            break;
-        case QtWarningMsg:
-            ts << QDate::currentDate().toString("yyyy_MM_dd") << "  " << QTime::currentTime().toString("hh_mm_ss_zzz") << "  " << "Warning: " << msg
-               << " (" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
-            break;
-        case QtCriticalMsg:
-            ts << QDate::currentDate().toString("yyyy_MM_dd") << "  " << QTime::currentTime().toString("hh_mm_ss_zzz") << "  " << "Critical: " << msg
-               << " (" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
-            break;
-        case QtFatalMsg:
-            ts << QDate::currentDate().toString("yyyy_MM_dd") << "  " << QTime::currentTime().toString("hh_mm_ss_zzz") << "  " << "Fatal: " << msg
-               << " (" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
-            abort();
-        }
+  switch (type) {
+  case QtDebugMsg:
+    ts << QDate::currentDate().toString("yyyy_MM_dd") << "  "
+       << QTime::currentTime().toString("hh_mm_ss_zzz") << "  "
+       << "Debug: " << msg << " (" << context.file << ":" << context.line
+       << ", " << context.function << ")" << endl;
+    break;
+  case QtInfoMsg:
+    ts << QDate::currentDate().toString("yyyy_MM_dd") << "  "
+       << QTime::currentTime().toString("hh_mm_ss_zzz") << "  "
+       << "Info: " << msg << " (" << context.file << ":" << context.line << ", "
+       << context.function << ")" << endl;
+    break;
+  case QtWarningMsg:
+    ts << QDate::currentDate().toString("yyyy_MM_dd") << "  "
+       << QTime::currentTime().toString("hh_mm_ss_zzz") << "  "
+       << "Warning: " << msg << " (" << context.file << ":" << context.line
+       << ", " << context.function << ")" << endl;
+    break;
+  case QtCriticalMsg:
+    ts << QDate::currentDate().toString("yyyy_MM_dd") << "  "
+       << QTime::currentTime().toString("hh_mm_ss_zzz") << "  "
+       << "Critical: " << msg << " (" << context.file << ":" << context.line
+       << ", " << context.function << ")" << endl;
+    break;
+  case QtFatalMsg:
+    ts << QDate::currentDate().toString("yyyy_MM_dd") << "  "
+       << QTime::currentTime().toString("hh_mm_ss_zzz") << "  "
+       << "Fatal: " << msg << " (" << context.file << ":" << context.line
+       << ", " << context.function << ")" << endl;
+    abort();
+  }
 }
-} //end of namespace logutils
+} // end of namespace logutils

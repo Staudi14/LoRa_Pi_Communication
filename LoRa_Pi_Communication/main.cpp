@@ -24,269 +24,241 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <QtGlobal>
 
-#include "LoRaClass.h"
 #include "JSON.h"
+#include "LoRaClass.h"
 #include "logutils.h"
 
-#define CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/config.json"
-#define USER_CONFIG_PATH "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/user_config.json"
-#define LOG_PATH "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/log.txt"
-
+#define CONFIG_PATH                                                            \
+  "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/config.json"
+#define USER_CONFIG_PATH                                                       \
+  "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/"             \
+  "user_config.json"
+#define LOG_PATH                                                               \
+  "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/log.txt"
 
 using namespace std;
 
-
-//Initializer
+// Initializer
 void initLoRa(JSON &config, JSON &user_config);
 
-//Signal handlers
+// Signal handlers
 void handlerSIGTERM(int signum);
 void handlerSIGABRT(int signum);
 void handlerSIGINT(int signum);
 
+int main(void) {
+  JSON config;
+  JSON user_config;
 
-int main(void)
-{
-    JSON config;
-	JSON user_config;
+  // Registrate signal handler
+  std::signal(SIGTERM, handlerSIGTERM);
+  std::signal(SIGABRT, handlerSIGABRT);
+  std::signal(SIGINT, handlerSIGINT);
 
-    //Registrate signal handler
-    std::signal(SIGTERM, handlerSIGTERM);
-    std::signal(SIGABRT, handlerSIGABRT);
-    std::signal(SIGINT, handlerSIGINT);
-
-
-    //Initializing logger
-    if(!logutils::initLogging())
-    {
+  // Initializing logger
+  if (!logutils::initLogging()) {
 #ifdef DEBUG
-        std::cout << "Logger could not start" << std::endl;
+    std::cout << "Logger could not start" << std::endl;
 #endif
-        abort();
-    }
+    abort();
+  }
 
 #ifdef DEBUG
-    std::cout << "Before File opening" << std::endl;
+  std::cout << "Before File opening" << std::endl;
 #endif
 
-    //Check if config.json is found
-	if (!config.open(CONFIG_PATH)) {
+  // Check if config.json is found
+  if (!config.open(CONFIG_PATH)) {
 #ifdef DEBUG
-		cout << "config.json could not be found." << endl;
+    cout << "config.json could not be found." << endl;
 #endif
-        qFatal("file not found: config.json could not be found");
+    qFatal("file not found: config.json could not be found");
+  } else // Check if config.json contains everything
+  {
+    if ((!config.hasSPI()) || (!config.hasSPI_frequency()) ||
+        (!config.hasSS()) || (!config.hasReset()) || (!config.hasDIO0()) ||
+        (!config.hasFrequency()) || (!config.hasPower()) ||
+        (!config.hasRFO()) || (!config.hasPAboost()) || (!config.hasMode())) {
+      qFatal("config: Config is damaged, settings are missing");
     }
-    else            //Check if config.json contains everything
-    {
-        if((!config.hasSPI()) || (!config.hasSPI_frequency()) || (!config.hasSS()) ||
-                (!config.hasReset()) || (!config.hasDIO0()) || (!config.hasFrequency()) ||
-                (!config.hasPower()) || (!config.hasRFO()) || (!config.hasPAboost()) ||
-                (!config.hasMode()))
-        {
-            qFatal("config: Config is damaged, settings are missing");
-        }
-    }
+  }
 
-/*
-	//Testing JSON.h
-	cout << "spi: " << config.getSPI() << endl;
-	cout << "spi_frequency: " << config.getSPI_frequency() << endl;
-	cout << "ss_pin: " << config.getSS_pin() << endl;
-	cout << "reset_pin: " << config.getResetPin() << endl;
-	cout << "dio0_pin: " << config.getDIO0_pin() << endl;
-	cout << "frequency: " << config.getFrequency() << endl;
-	cout << "power: " << config.getPower() << endl;
-	cout << "rfo_pin: " << config.getRFO_pin() << endl;
-	cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
-	cout << "mode: " << config.getMode() << endl;
-*/	
+  /*
+        //Testing JSON.h
+        cout << "spi: " << config.getSPI() << endl;
+        cout << "spi_frequency: " << config.getSPI_frequency() << endl;
+        cout << "ss_pin: " << config.getSS_pin() << endl;
+        cout << "reset_pin: " << config.getResetPin() << endl;
+        cout << "dio0_pin: " << config.getDIO0_pin() << endl;
+        cout << "frequency: " << config.getFrequency() << endl;
+        cout << "power: " << config.getPower() << endl;
+        cout << "rfo_pin: " << config.getRFO_pin() << endl;
+        cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
+        cout << "mode: " << config.getMode() << endl;
+*/
 
-    initLoRa(config, user_config);
-    qInfo("config: Config was loaded succesfully");
+  initLoRa(config, user_config);
+  qInfo("config: Config was loaded succesfully");
 
 #ifdef DEBUG
-	std::cout << "Config loaded" << std::endl;
+  std::cout << "Config loaded" << std::endl;
 #endif // DEBUG
-	
-/*
-	//Begin LoRa
-	LoRa.begin();
 
-	int counter;
-	string buffer;
+  /*
+        //Begin LoRa
+        LoRa.begin();
 
-	
+        int counter;
+        string buffer;
 
-	while (true) 
-	{
-		
 
-		// send packet
-		buffer.append("Hello World ");
-		buffer.append(to_string(counter));
 
-		cout << buffer << endl;
+        while (true)
+        {
 
-		LoRa.beginPacket();
-		LoRa.print(buffer);
-		LoRa.endPacket();
 
-		counter++;
-		buffer.clear();
-		delay(5000);
-	}
+                // send packet
+                buffer.append("Hello World ");
+                buffer.append(to_string(counter));
 
-	LoRa.end();
-*/	
-	
+                cout << buffer << endl;
 
-	string i;
-	cin >> i;
-	return 0;
+                LoRa.beginPacket();
+                LoRa.print(buffer);
+                LoRa.endPacket();
+
+                counter++;
+                buffer.clear();
+                delay(5000);
+        }
+
+        LoRa.end();
+*/
+
+  string i;
+  cin >> i;
+  return 0;
 }
 
-
-void initLoRa(JSON &config, JSON &user_config)
-{
-    if (user_config.open(USER_CONFIG_PATH))			//Checks if user_config exists
-    {
-        //Setting up SPI
-        if (user_config.hasSPI())
-        {
-            LoRa.setSPIPort(user_config.getSPI());
+void initLoRa(JSON &config, JSON &user_config) {
+  if (user_config.open(USER_CONFIG_PATH)) // Checks if user_config exists
+  {
+    // Setting up SPI
+    if (user_config.hasSPI()) {
+      LoRa.setSPIPort(user_config.getSPI());
 #ifdef DEBUG
-            std::cout << "spi " << "user_config" << endl;
+      std::cout << "spi "
+                << "user_config" << endl;
 #endif // DEBUG
-        }
-        else
-        {
-            LoRa.setSPIFrequency(config.getSPI());
-        }
-
-        if (user_config.hasSPI_frequency())
-        {
-            LoRa.setSPIPort(user_config.getSPI_frequency());
-#ifdef DEBUG
-            std::cout << "spi_frequency " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else
-        {
-            LoRa.setSPIFrequency(config.getSPI_frequency());
-        }
-
-        //Set transmission frequency
-        if (user_config.hasFrequency())
-        {
-            LoRa.setFrequency(user_config.getFrequency());
-#ifdef DEBUG
-            std::cout << "frequency " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else
-        {
-            LoRa.setFrequency(config.getFrequency());
-        }
-
-        //Set Pins
-        if (user_config.hasSS())
-        {
-            LoRa.setSS(user_config.getSS_pin());
-#ifdef DEBUG
-            std::cout << "ss " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else
-        {
-            LoRa.setSS(config.getSS_pin());
-        }
-
-        if (user_config.hasReset())
-        {
-            LoRa.setReset(user_config.getResetPin());
-#ifdef DEBUG
-            std::cout << "reset " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else
-        {
-            LoRa.setReset(config.getResetPin());
-        }
-
-        if (user_config.hasDIO0())
-        {
-            LoRa.setDIO0(user_config.getDIO0_pin());
-#ifdef DEBUG
-            std::cout << "dio0 " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else
-        {
-            LoRa.setDIO0(config.getDIO0_pin());
-        }
-
-        //Set Tx power and RFO pin
-        if (user_config.hasPower())
-        {
-            LoRa.setTxPower(user_config.getPower(), config.getPAboostPin());
-#ifdef DEBUG
-            std::cout << "power " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else if (user_config.hasPAboost())
-        {
-            LoRa.setTxPower(config.getPower(), user_config.getPAboostPin());
-#ifdef DEBUG
-            std::cout << "PAboost " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else if(user_config.hasPower() && user_config.hasPAboost())
-        {
-            LoRa.setTxPower(user_config.getPower(), user_config.getPAboostPin());
-#ifdef DEBUG
-            std::cout << "power; PAboost " << "user_config" << endl;
-#endif // DEBUG
-        }
-        else
-        {
-            LoRa.setTxPower(config.getPower(), config.getPAboostPin());
-        }
-    }
-    else
-    {
-        //Setting up SPI
-        LoRa.setSPIPort(config.getSPI());
-        LoRa.setSPIFrequency(config.getSPI_frequency());
-
-        //Set transmission frequency
-        LoRa.setFrequency(config.getFrequency());
-
-        //Set Pins
-        LoRa.setPins(config.getSS_pin(), config.getResetPin(), config.getDIO0_pin());
-
-        //Set Tx power and RFO pin
-        LoRa.setTxPower(config.getPower(), config.getPAboostPin());
+    } else {
+      LoRa.setSPIFrequency(config.getSPI());
     }
 
+    if (user_config.hasSPI_frequency()) {
+      LoRa.setSPIPort(user_config.getSPI_frequency());
+#ifdef DEBUG
+      std::cout << "spi_frequency "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else {
+      LoRa.setSPIFrequency(config.getSPI_frequency());
+    }
+
+    // Set transmission frequency
+    if (user_config.hasFrequency()) {
+      LoRa.setFrequency(user_config.getFrequency());
+#ifdef DEBUG
+      std::cout << "frequency "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else {
+      LoRa.setFrequency(config.getFrequency());
+    }
+
+    // Set Pins
+    if (user_config.hasSS()) {
+      LoRa.setSS(user_config.getSS_pin());
+#ifdef DEBUG
+      std::cout << "ss "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else {
+      LoRa.setSS(config.getSS_pin());
+    }
+
+    if (user_config.hasReset()) {
+      LoRa.setReset(user_config.getResetPin());
+#ifdef DEBUG
+      std::cout << "reset "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else {
+      LoRa.setReset(config.getResetPin());
+    }
+
+    if (user_config.hasDIO0()) {
+      LoRa.setDIO0(user_config.getDIO0_pin());
+#ifdef DEBUG
+      std::cout << "dio0 "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else {
+      LoRa.setDIO0(config.getDIO0_pin());
+    }
+
+    // Set Tx power and RFO pin
+    if (user_config.hasPower()) {
+      LoRa.setTxPower(user_config.getPower(), config.getPAboostPin());
+#ifdef DEBUG
+      std::cout << "power "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else if (user_config.hasPAboost()) {
+      LoRa.setTxPower(config.getPower(), user_config.getPAboostPin());
+#ifdef DEBUG
+      std::cout << "PAboost "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else if (user_config.hasPower() && user_config.hasPAboost()) {
+      LoRa.setTxPower(user_config.getPower(), user_config.getPAboostPin());
+#ifdef DEBUG
+      std::cout << "power; PAboost "
+                << "user_config" << endl;
+#endif // DEBUG
+    } else {
+      LoRa.setTxPower(config.getPower(), config.getPAboostPin());
+    }
+  } else {
+    // Setting up SPI
+    LoRa.setSPIPort(config.getSPI());
+    LoRa.setSPIFrequency(config.getSPI_frequency());
+
+    // Set transmission frequency
+    LoRa.setFrequency(config.getFrequency());
+
+    // Set Pins
+    LoRa.setPins(config.getSS_pin(), config.getResetPin(),
+                 config.getDIO0_pin());
+
+    // Set Tx power and RFO pin
+    LoRa.setTxPower(config.getPower(), config.getPAboostPin());
+  }
 }
 
-void handlerSIGTERM(int signum)
-{
-    //Cleaning up LoRa
-    LoRa.end();
-    exit(signum);
+void handlerSIGTERM(int signum) {
+  // Cleaning up LoRa
+  LoRa.end();
+  exit(signum);
 }
 
-void handlerSIGABRT(int signum)
-{
-    //Cleaning up LoRa
-    LoRa.end();
-    exit(signum);
+void handlerSIGABRT(int signum) {
+  // Cleaning up LoRa
+  LoRa.end();
+  exit(signum);
 }
 
-void handlerSIGINT(int signum)
-{
-    //Cleaning up LoRa
-    LoRa.end();
-    exit(signum);
+void handlerSIGINT(int signum) {
+  // Cleaning up LoRa
+  LoRa.end();
+  exit(signum);
 }

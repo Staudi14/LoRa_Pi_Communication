@@ -20,132 +20,129 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 /*
 This Programm uses the BCM pin numbering for the Raspberry Pi
 */
+#include <iostream>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-#include <iostream>
 
-//using namespace std;
+// using namespace std;
 
-//#define DUMPREG										//activates not functioning methode dumpRegesiters
+//#define DUMPREG
+////activates not functioning methode dumpRegesiters
 
-#define WIRINGPI_CODES									//Setup outputs error message
+#define WIRINGPI_CODES // Setup outputs error message
 
-#define LORA_DEFAULT_SPI			0
-#define LORA_DEFAULT_SPI_FREQUENCY	8E6 
-#define LORA_DEFAULT_SS_PIN			22
-#define LORA_DEFAULT_RESET_PIN		27
-#define LORA_DEFAULT_DIO0_PIN		17
+#define LORA_DEFAULT_SPI 0
+#define LORA_DEFAULT_SPI_FREQUENCY 8E6
+#define LORA_DEFAULT_SS_PIN 22
+#define LORA_DEFAULT_RESET_PIN 27
+#define LORA_DEFAULT_DIO0_PIN 17
 
-#define LORA_DEFAULT_FREQUENCY		868e6
-#define LORA_DEFAULT_POWER			17					//17dBm
+#define LORA_DEFAULT_FREQUENCY 868e6
+#define LORA_DEFAULT_POWER 17 // 17dBm
 
-#define PA_OUTPUT_RFO_PIN			0					//represents false
-#define PA_OUTPUT_PA_BOOST_PIN		1					//represents true
+#define PA_OUTPUT_RFO_PIN 0      // represents false
+#define PA_OUTPUT_PA_BOOST_PIN 1 // represents true
 
-
-class LoRaClass
-{
+class LoRaClass {
 public:
-	
-	LoRaClass();
-	
-	~LoRaClass();
-	
-	void begin();
+  LoRaClass();
 
-	void end();
+  ~LoRaClass();
 
-	/*LoRaClass(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN, 
-		long frequency = LORA_DEFAULT_FREQUENCY, int spi = LORA_DEFAULT_SPI, long spi_frequency = LORA_DEFAULT_SPI_FREQUENCY, 
-		int power = LORA_DEFAULT_POWER);*/
+  void begin();
 
-	int beginPacket(int implicitHeader = false);
-	int endPacket(bool async = false);
-	void print(std::string input);
+  void end();
 
-	int parsePacket(uint8_t size = 0);
-	int packetRssi();
-	float packetSnr();
-	long packetFrequencyError();
+  /*LoRaClass(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN,
+     int dio0 = LORA_DEFAULT_DIO0_PIN, long frequency = LORA_DEFAULT_FREQUENCY,
+     int spi = LORA_DEFAULT_SPI, long spi_frequency =
+     LORA_DEFAULT_SPI_FREQUENCY, int power = LORA_DEFAULT_POWER);*/
 
-	
-	virtual size_t write(uint8_t byte);
-	virtual size_t write(const uint8_t *buffer, size_t size);
+  int beginPacket(int implicitHeader = false);
+  int endPacket(bool async = false);
+  void print(std::string input);
 
-	virtual int available();
-	virtual int read();
-	virtual int peek();
-	virtual void flush();
+  int parsePacket(uint8_t size = 0);
+  int packetRssi();
+  float packetSnr();
+  long packetFrequencyError();
 
-	void onReceive(void(*callback)(int));
+  virtual size_t write(uint8_t byte);
+  virtual size_t write(const uint8_t *buffer, size_t size);
 
-	void receive(size_t size = 0);
+  virtual int available();
+  virtual int read();
+  virtual int peek();
+  virtual void flush();
 
-	void idle();
-	void sleep();
+  void onReceive(void (*callback)(int));
 
-    void setTxPower(unsigned int level, int outputPin);
-    void setTxPower(unsigned int level);
-	void setFrequency(long frequency);
-	void setSpreadingFactor(int sf);
-	void setSignalBandwidth(long sbw);
-	void setCodingRate4(int denominator);
-	void setPreambleLength(long length);
-	void setSyncWord(int sw);
-	void enableCrc();
-	void disableCrc();
-	void enableInvertIQ();
-	void disableInvertIQ();
+  void receive(size_t size = 0);
 
-	void setOCP(uint8_t mA); // Over Current Protection control
+  void idle();
+  void sleep();
 
-	char random();
+  void setTxPower(unsigned int level, int outputPin);
+  void setTxPower(unsigned int level);
+  void setFrequency(long frequency);
+  void setSpreadingFactor(int sf);
+  void setSignalBandwidth(long sbw);
+  void setCodingRate4(int denominator);
+  void setPreambleLength(long length);
+  void setSyncWord(int sw);
+  void enableCrc();
+  void disableCrc();
+  void enableInvertIQ();
+  void disableInvertIQ();
 
-	void setPins(int ss, int reset, int dio0);
-	void setSPIFrequency(uint32_t frequency);
-	void setSPIPort(unsigned int port);
+  void setOCP(uint8_t mA); // Over Current Protection control
 
-	void setSS(int ss);
-	void setReset(int reset);
-	void setDIO0(int dio0);
+  char random();
+
+  void setPins(int ss, int reset, int dio0);
+  void setSPIFrequency(uint32_t frequency);
+  void setSPIPort(unsigned int port);
+
+  void setSS(int ss);
+  void setReset(int reset);
+  void setDIO0(int dio0);
 
 #ifdef DUMPREG
-	void dumpRegisters(Stream& out);
+  void dumpRegisters(Stream &out);
 #endif
 
 private:
-	void explicitHeaderMode();
-	void implicitHeaderMode();
+  void explicitHeaderMode();
+  void implicitHeaderMode();
 
-	void handleDio0Rise();
-	bool isTransmitting();
+  void handleDio0Rise();
+  bool isTransmitting();
 
-	int getSpreadingFactor();
-	long getSignalBandwidth();
+  int getSpreadingFactor();
+  long getSignalBandwidth();
 
-	void setLdoFlag();
+  void setLdoFlag();
 
-	uint8_t readRegister(uint8_t address);
-	void writeRegister(uint8_t address, uint8_t value);
-	uint8_t singleTransfer(uint8_t address, uint8_t value);
+  uint8_t readRegister(uint8_t address);
+  void writeRegister(uint8_t address, uint8_t value);
+  uint8_t singleTransfer(uint8_t address, uint8_t value);
 
-	static void onDio0Rise();
+  static void onDio0Rise();
 
 private:
-    unsigned int _ss;
-    unsigned int _reset;
-    unsigned int _dio0;
-    unsigned long _frequency;
-    unsigned int _packetIndex;
-    unsigned int _implicitHeaderMode;
-	void(*_onReceive)(int);
+  unsigned int _ss;
+  unsigned int _reset;
+  unsigned int _dio0;
+  unsigned long _frequency;
+  unsigned int _packetIndex;
+  unsigned int _implicitHeaderMode;
+  void (*_onReceive)(int);
 
-	bool _interruptState;
-    unsigned int _spiFrequency;
-    unsigned int _spiPort;
-    unsigned int _power;
-    unsigned int _pa_rfo_pin;
+  bool _interruptState;
+  unsigned int _spiFrequency;
+  unsigned int _spiPort;
+  unsigned int _power;
+  unsigned int _pa_rfo_pin;
 };
 
 extern LoRaClass LoRa;
-
