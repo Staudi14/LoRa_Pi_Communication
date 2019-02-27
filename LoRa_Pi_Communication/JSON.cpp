@@ -136,13 +136,13 @@ std::string JSON::getConfig() {
     }
 }
 
-std::string JSON::getJSON(char *key, TYPES type) {
+std::string JSON::getJSON(const char *key, TYPES type) {
     QMutex mutex;
     QMutexLocker lock(&mutex);
 
     if (conf.HasMember(key)) {
         switch (type) {
-        STRING:
+        case STRING:
             if (conf[key].IsString()) {
                 return std::string(conf[key].GetString());
             } else {
@@ -150,7 +150,7 @@ std::string JSON::getJSON(char *key, TYPES type) {
             }
             break;
 
-        INT:
+        case INT:
             if (conf[key].IsInt()) {
 
                 return std::to_string(conf[key].GetInt());
@@ -159,7 +159,7 @@ std::string JSON::getJSON(char *key, TYPES type) {
             }
             break;
 
-        INT64:
+        case INT64:
             if (conf[key].IsInt64()) {
 
                 return std::to_string(conf[key].GetInt64());
@@ -168,7 +168,7 @@ std::string JSON::getJSON(char *key, TYPES type) {
             }
             break;
 
-        FLOAT:
+        case FLOAT:
             if (conf[key].IsFloat()) {
 
                 return std::to_string(conf[key].GetFloat());
@@ -177,7 +177,7 @@ std::string JSON::getJSON(char *key, TYPES type) {
             }
             break;
 
-        BOOL:
+        case BOOL:
             if (conf[key].IsBool()) {
 
                 return conf[key].GetBool() == true ? std::to_string(1)
@@ -192,85 +192,17 @@ std::string JSON::getJSON(char *key, TYPES type) {
     }
 }
 
-int JSON::getSPI() {
-    if (conf.HasMember("spi")) {
-        if (conf["spi"].IsInt()) {
-            return conf["spi"].GetInt();
-        } else {
-
-#ifdef DEBUG
-            std::cout << "spi is not int" << std::endl;
-#endif
-
-            qFatal("config: %s, spi is not int", path.c_str());
-        }
-
-    } else {
-#ifdef DEBUG
-        std::cout << "spi setting is missing" << std::endl;
-#endif
-        qFatal("config: %s, spi is missing", path.c_str());
-    }
-    // return 0;
-}
+int JSON::getSPI() { return std::stoi(getJSON("spi", TYPES::INT)); }
 
 long int JSON::getSPI_frequency() {
-    if (conf.HasMember("spi_frequency")) {
-        if (conf["spi_frequency"].IsInt64()) {
-            return (long int)conf["spi_frequency"].GetInt64();
-        } else {
-#ifdef DEBUG
-            std::cout << "spi_frequency is not int64" << std::endl;
-#endif
-            qFatal("config: %s, spi_frequency is not long int (int64)",
-                   path.c_str());
-        }
 
-    } else {
-#ifdef DEBUG
-        std::cout << "spi_frequency setting is missing" << std::endl;
-#endif
-        qFatal("config: %s, spi_frequency is missing", path.c_str());
-    }
-    // return 0;
+    return std::stol(getJSON("spi_frequency", TYPES::INT64));
 }
 
-int JSON::getSS_pin() {
-    if (conf.HasMember("ss_pin")) {
-        if (conf["ss_pin"].IsInt()) {
-            return conf["ss_pin"].GetInt();
-        } else {
-#ifdef DEBUG
-            std::cout << "ss_pin is not int" << std::endl;
-#endif
-            qFatal("config: %s, ss_pin is not int", path.c_str());
-        }
-
-    } else {
-#ifdef DEBUG
-        std::cout << "ss_pin setting is missing" << std::endl;
-#endif
-        qFatal("config: %s, ss_pin is missing", path.c_str());
-    }
-    // return 0;
-}
+int JSON::getSS_pin() { return std::stoi(getJSON("ss_pin", TYPES::INT)); }
 
 // TODO
-int JSON::getResetPin() {
-    if (conf.HasMember("reset_pin")) {
-        if (conf["reset_pin"].IsInt()) {
-            return conf["reset_pin"].GetInt();
-        } else {
-            std::cout << "reset_pin is not int" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-    } else {
-        std::cout << "reset_pin setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // return 0;
-}
+int JSON::getResetPin() { return std::stoi(getJSON("reset_pin", TYPES::INT)); }
 
 int JSON::getDIO0_pin() {
     if (conf.HasMember("dio0_pin")) {
