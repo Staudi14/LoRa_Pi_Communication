@@ -81,6 +81,11 @@ bool JSON::setPath(const char *fpath) {
     }
 }
 
+bool JSON::exists(){
+    QFile cnf(path.c_str());
+    return cnf.exists();
+}
+
 bool JSON::open(std::string fpath) { return open(fpath.c_str()); }
 
 bool JSON::open(const char *fpath) {

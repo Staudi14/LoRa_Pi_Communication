@@ -150,7 +150,7 @@ int main(void) {
 }
 
 void initLoRa(JSON::JSON &config, JSON::JSON &user_config) {
-    if (user_config.open(USER_CONFIG_PATH)) // Checks if user_config exists
+    if (user_config.exists()) // Checks if user_config exists
     {
         // Setting up SPI
         if (user_config.hasSPI()) {

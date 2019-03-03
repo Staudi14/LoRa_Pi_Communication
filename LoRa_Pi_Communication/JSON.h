@@ -47,6 +47,8 @@ class JSON {
     bool setPath(std::string fpath);
     bool setPath(const char *fpath);
 
+    bool exists();
+
     bool open(std::string fpath);
     bool open(const char *fpath);
 
