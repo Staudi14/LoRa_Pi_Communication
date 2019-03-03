@@ -33,7 +33,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define JPOWER "power"
 #define JMODE "mode"
 
-#define DEBUG
+//#define DEBUG
 
 namespace JSON {
 JSON::JSON() { conf.SetObject(); }
@@ -205,6 +205,7 @@ std::string JSON::getJSON(const char *key, TYPES type) {
     } else {
         throw std::invalid_argument("key is missing");
     }
+    return nullptr;
 }
 
 int JSON::getSPI() { return std::stoi(getJSON(JSPI, TYPES::INT)); }
