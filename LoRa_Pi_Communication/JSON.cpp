@@ -16,10 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 #include "JSON.h"
-#include <QMutex>
+#include <QFile>
 #include <QMutexLocker>
 #include <QtGlobal>
 #include <exception>
+
+#define JSPI "spi"
+#define JSPI_FREQUENCY "spi_frequency"
+#define JFREQUENCY "frequency"
+#define JSS_PIN "ss_pin"
+#define JRESE_PIN "reset_pin"
+#define JDIO0_PIN "dio0_pin"
+#define JRFO_PIN "rfo_pin"
+#define JPA_BOOST_PIN "pa_boost_pin"
+#define JPOWER "power"
+#define JMODE "mode"
 
 #define DEBUG
 
@@ -27,55 +38,40 @@ JSON::JSON() { conf.SetObject(); }
 
 JSON::~JSON() {}
 
-// Change that functions takes the config as parameter and returns the cleared
-// config
-void JSON::commentRemover() {
-    static QMutex mutex;
-
-    QMutexLocker lock(&mutex);
-
-    char iter[config.length()];
+std::string JSON::commentRemover(std::string cnf) {
 
     bool copy = true;
     std::string newString;
 
-    sprintf(iter, "%s", config.c_str());
-
-    for (unsigned int i = 0; i < config.length() - 1; i++) {
-        if (iter[i] == '/' && iter[i + 1] == '/') {
+    for (unsigned int i = 0; i < cnf.length() - 1; i++) {
+        if (cnf.c_str()[i] == '/' && cnf.c_str()[i + 1] == '/') {
             copy = false;
         }
 
-        if (iter[i] == '\n') {
+        if (cnf.c_str()[i] == '\n') {
             copy = true;
             newString.append("\n");
             continue;
         }
 
         if (copy) {
-            newString.append(1, iter[i]);
+            newString.append(1, cnf.c_str()[i]);
         }
     }
 
     if (copy) {
-        newString.append(1, iter[config.length() - 1]);
+        newString.append(1, cnf.c_str()[cnf.length() - 1]);
     }
 
-    config = newString;
+    return newString;
 }
 
 bool JSON::setPath(std::string fpath) { return setPath(fpath.c_str()); }
 
 bool JSON::setPath(const char *fpath) {
-    static QMutex mutex;
+    QFile cnf(fpath);
 
-    QMutexLocker lock(&mutex);
-
-    std::fstream fconfig;
-    fconfig.open(fpath, std::ios::in);
-
-    if (fconfig.is_open()) { // Testing if path is correct
-        fconfig.close();
+    if (cnf.exists()) { // Testing if path is correct
         path.assign(fpath);
         return true;
     } else {
@@ -87,7 +83,7 @@ bool JSON::open(std::string fpath) { return open(fpath.c_str()); }
 
 bool JSON::open(const char *fpath) {
     if (setPath(fpath)) {
-        getConfig();
+        parseConfig(getConfig());
 
         qInfo("config: %s loaded", fpath);
 
@@ -102,31 +98,29 @@ std::string JSON::getConfig() {
 
     static QMutex mutex;
     std::fstream fconfig;
+    std::string cnf;
 
     QMutexLocker locker(&mutex);
 
     fconfig.open(path, std::ios::in);
 
-    config.clear();
-
     if (fconfig.is_open()) { // Testing if path is correct
 
-        config.assign(std::istreambuf_iterator<char>(fconfig),
-                      std::istreambuf_iterator<char>());
+        cnf.assign(std::istreambuf_iterator<char>(fconfig),
+                   std::istreambuf_iterator<char>());
 
 #ifdef DEBUG
         std::cout << path.c_str() << std::endl;
-        std::cout << config.c_str() << std::endl; // For debugging purposes
+        std::cout << cnf.c_str() << std::endl; // For debugging purposes
 #endif
         fconfig.close();
+        locker.unlock();
 
-        if (config.length() > 2) {
-            commentRemover();
-            conf.Parse(config.c_str());
+        if (cnf.length() > 2) {
+            cnf.assign(commentRemover(cnf));
 
-            return std::string(config);
+            return std::string(cnf);
         } else {
-            config.clear();
             throw std::invalid_argument("config is empty");
         }
 
@@ -136,9 +130,13 @@ std::string JSON::getConfig() {
     }
 }
 
+void JSON::parseConfig(std::string cnf) {
+    QMutexLocker lockerConf(&mutexConf);
+    conf.Parse(cnf.c_str());
+}
+
 std::string JSON::getJSON(const char *key, TYPES type) {
-    QMutex mutex;
-    QMutexLocker lock(&mutex);
+    QMutexLocker lockConf(&mutexConf);
 
     if (conf.HasMember(key)) {
         switch (type) {
@@ -180,8 +178,8 @@ std::string JSON::getJSON(const char *key, TYPES type) {
         case BOOL:
             if (conf[key].IsBool()) {
 
-                return conf[key].GetBool() == true ? std::to_string(1)
-                                                   : std::to_string(0);
+                return conf[key].GetBool() == true ? std::string("true")
+                                                   : std::string("false");
             } else {
                 qFatal("config: %s, %s is not Bool", path.c_str(), key);
             }
@@ -192,307 +190,170 @@ std::string JSON::getJSON(const char *key, TYPES type) {
     }
 }
 
-int JSON::getSPI() { return std::stoi(getJSON("spi", TYPES::INT)); }
+int JSON::getSPI() { return std::stoi(getJSON(JSPI, TYPES::INT)); }
 
 long int JSON::getSPI_frequency() {
-
-    return std::stol(getJSON("spi_frequency", TYPES::INT64));
+    return std::stol(getJSON(JSPI_FREQUENCY, TYPES::INT64));
 }
 
-int JSON::getSS_pin() { return std::stoi(getJSON("ss_pin", TYPES::INT)); }
+int JSON::getSS_pin() { return std::stoi(getJSON(JSS_PIN, TYPES::INT)); }
 
-// TODO
-int JSON::getResetPin() { return std::stoi(getJSON("reset_pin", TYPES::INT)); }
+int JSON::getResetPin() { return std::stoi(getJSON(JRESE_PIN, TYPES::INT)); }
 
-int JSON::getDIO0_pin() {
-    if (conf.HasMember("dio0_pin")) {
-        if (conf["dio0_pin"].IsInt()) {
-            return conf["dio0_pin"].GetInt();
-        } else {
-            std::cout << "dio0_pin is not int" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-    } else {
-        std::cout << "dio0_pin setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // return 0;
-}
+int JSON::getDIO0_pin() { return std::stoi(getJSON(JDIO0_PIN, TYPES::INT)); }
 
 long int JSON::getFrequency() {
-    if (conf.HasMember("frequency")) {
-        if (conf["frequency"].IsInt64()) {
-            return (long int)conf["frequency"].GetInt64();
-        } else {
-            std::cout << "frequency is not int64" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-    } else {
-        std::cout << "frequency setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // return 0;
+    return std::stol(getJSON(JFREQUENCY, TYPES::INT64));
 }
 
-int JSON::getPower() {
-    if (conf.HasMember("power")) {
-        if (conf["power"].IsInt()) {
-            return conf["power"].GetInt();
-        } else {
-            std::cout << "power is not int" << std::endl;
-            exit(EXIT_FAILURE);
-        }
+int JSON::getPower() { return std::stoi(getJSON(JPOWER, TYPES::INT)); }
 
-    } else {
-        std::cout << "power setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // return 0;
-}
-
-int JSON::getRFO_pin() {
-    if (conf.HasMember("rfo_pin")) {
-        if (conf["rfo_pin"].IsInt()) {
-            return conf["rfo_pin"].GetInt();
-        } else {
-            std::cout << "rfo_pin is not int" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-    } else {
-        std::cout << "rfo_pin setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // return 0;
-}
+int JSON::getRFO_pin() { return std::stoi(getJSON(JRFO_PIN, TYPES::INT)); }
 
 int JSON::getPAboostPin() {
-    if (conf.HasMember("pa_boost_pin")) {
-        if (conf["pa_boost_pin"].IsBool()) {
-            return (conf["pa_boost_pin"].GetBool() ? 1 : 0);
-        } else {
-            std::cout << "pa_boost_pin is not bool" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-    } else {
-        std::cout << "pa_boost_pin setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // return 0;
+    return std::stoi(getJSON(JPA_BOOST_PIN, TYPES::INT));
 }
 
-std::string JSON::getMode() {
-    if (conf.HasMember("mode")) {
-        if (conf["mode"].IsString()) {
-            return std::string(conf["mode"].GetString());
+std::string JSON::getMode() { return getJSON(JMODE, TYPES::STRING); }
+
+void JSON::setJSON(const char *key, std::string value, TYPES type) {
+    QMutexLocker lockConf(&mutexConf);
+
+    switch (type) {
+    case STRING:
+        if (conf.HasMember(key)) {
+            if (conf[key].IsString()) {
+                conf[key].SetString(value.c_str(), conf.GetAllocator());
+            }
         } else {
-            std::cout << "mode is not string" << std::endl;
-            exit(EXIT_FAILURE);
-        }
+            rapidjson::Value Vvalue;
+            rapidjson::Value Vkey(key, conf.GetAllocator());
 
-    } else {
-        std::cout << "mode setting is missing" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    return nullptr;
-}
-
-void JSON::setSPI(int spi) {
-    if (conf.HasMember("spi")) // spi value already exists
-    {
-        if (conf["spi"].IsInt()) {
-            conf["spi"].SetInt(spi);
-        }
-    } else // spi value does not exist already and must be created
-    {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(spi);
+            Vvalue.SetString(value.c_str(), conf.GetAllocator());
 
 #ifdef DEBUG
-        std::cout << "SPI: " << spiSetter.GetInt() << std::endl;
+            std::cout << key << " : " << Vvalue.GetString() << std::endl;
 #endif // DEBUG
 
-        conf.GetObject().AddMember("spi", spiSetter, conf.GetAllocator());
-    }
+            conf.GetObject().AddMember(Vkey, Vvalue, conf.GetAllocator());
+        }
+        break;
 
-    saveJSON();
+    case INT:
+        if (conf.HasMember(key)) {
+            if (conf[key].IsInt()) {
+                conf[key].SetInt(std::stoi(value));
+            }
+        } else {
+            rapidjson::Value Vvalue;
+            rapidjson::Value Vkey(key, conf.GetAllocator());
+
+            Vvalue.SetInt(std::stoi(value));
+
+#ifdef DEBUG
+            std::cout << key << " : " << Vvalue.GetInt() << std::endl;
+#endif // DEBUG
+
+            conf.GetObject().AddMember(Vkey, Vvalue, conf.GetAllocator());
+        }
+        break;
+
+    case INT64:
+        if (conf.HasMember(key)) {
+            if (conf[key].IsInt64()) {
+                conf[key].SetInt64(std::stol(value));
+            }
+        } else {
+            rapidjson::Value Vvalue;
+            rapidjson::Value Vkey(key, conf.GetAllocator());
+
+            Vvalue.SetInt64(std::stol(value));
+
+#ifdef DEBUG
+            std::cout << key << " : " << Vvalue.GetInt64() << std::endl;
+#endif // DEBUG
+
+            conf.GetObject().AddMember(Vkey, Vvalue, conf.GetAllocator());
+        }
+        break;
+
+    case FLOAT:
+        if (conf.HasMember(key)) {
+            if (conf[key].IsFloat()) {
+                conf[key].SetFloat(std::stof(value));
+            }
+        } else {
+            rapidjson::Value Vvalue;
+            rapidjson::Value Vkey(key, conf.GetAllocator());
+
+            Vvalue.SetFloat(std::stof(value));
+
+#ifdef DEBUG
+            std::cout << key << " : " << Vvalue.GetFloat() << std::endl;
+#endif // DEBUG
+
+            conf.GetObject().AddMember(Vkey, Vvalue, conf.GetAllocator());
+        }
+        break;
+
+    case BOOL:
+        if (conf.HasMember(key)) {
+            if (conf[key].IsBool()) {
+                conf[key].SetBool(value == "true" ? true : false);
+            }
+        } else {
+            rapidjson::Value Vvalue;
+            rapidjson::Value Vkey(key, conf.GetAllocator());
+
+            Vvalue.SetBool(value == "true" ? true : false);
+
+#ifdef DEBUG
+            std::cout << key << " : " << Vvalue.GetBool() << std::endl;
+#endif // DEBUG
+
+            conf.GetObject().AddMember(Vkey, Vvalue, conf.GetAllocator());
+        }
+        break;
+    }
 }
+
+void JSON::setSPI(int spi) { setJSON("spi", std::to_string(spi), TYPES::INT); }
 
 void JSON::setSPI_frequency(long int frequency) {
-    if (conf.HasMember("spi_frequency")) {
-        if (conf["spi_frequency"].IsInt64()) {
-            conf["spi_frequency"].SetInt64(frequency);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(frequency);
-
-#ifdef DEBUG
-        std::cout << "spi_frequency: " << spiSetter.GetInt() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("spi_frequency", spiSetter,
-                                   conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("spi_frequency", std::to_string(frequency), TYPES::INT64);
 }
 
 void JSON::setSS_pin(int ss) {
-    if (conf.HasMember("ss_pin")) {
-        if (conf["ss_pin"].IsInt()) {
-            conf["ss_pin"].SetInt(ss);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(ss);
-
-#ifdef DEBUG
-        std::cout << "ss_pin: " << spiSetter.GetInt() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("ss_pin", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("ss_pin", std::to_string(ss), TYPES::INT);
 }
 
 void JSON::setResetPin(int reset) {
-    if (conf.HasMember("reset_pin")) {
-        if (conf["reset_pin"].IsInt()) {
-            conf["reset_pin"].SetInt(reset);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(reset);
-
-#ifdef DEBUG
-        std::cout << "reset_pin: " << spiSetter.GetInt() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("reset_pin", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("reset_pin", std::to_string(reset), TYPES::INT);
 }
 
 void JSON::setDIO0_pin(int dio0) {
-    if (conf.HasMember("dio0_pin")) {
-        if (conf["dio0_pin"].IsInt()) {
-            conf["dio0_pin"].SetInt(dio0);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(dio0);
-
-#ifdef DEBUG
-        std::cout << "dio0_pin: " << spiSetter.GetInt() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("dio0_pin", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("dio0_pin", std::to_string(dio0), TYPES::INT);
 }
 
 void JSON::setFrequency(long int frequency) {
-    if (conf.HasMember("frequency")) {
-        if (conf["frequency"].IsInt64()) {
-            conf["frequency"].SetInt64(frequency);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt64(frequency);
-
-#ifdef DEBUG
-        std::cout << "frequency: " << spiSetter.GetInt64() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("frequency", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("frequency", std::to_string(frequency), TYPES::INT);
 }
 
 void JSON::setPower(int power) {
-    if (conf.HasMember("power")) {
-        if (conf["power"].IsInt()) {
-            conf["power"].SetInt(power);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(power);
-
-#ifdef DEBUG
-        std::cout << "power: " << spiSetter.GetInt() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("power", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("power", std::to_string(power), TYPES::INT);
 }
 
 void JSON::setRFO_pin(int rfo) {
-    if (conf.HasMember("rfo_pin")) {
-        if (conf["rfo_pin"].IsInt()) {
-            conf["rfo_pin"].SetInt(rfo);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetInt(rfo);
-
-#ifdef DEBUG
-        std::cout << "rfo_pin: " << spiSetter.GetInt() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("rfo_pin", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("rfo_pin", std::to_string(rfo), TYPES::INT);
 }
 
 void JSON::setPAboostPin(bool paBoost) {
-    if (conf.HasMember("pa_boost_pin")) {
-        if (conf["pa_boost_pin"].IsBool()) {
-            conf["pa_boost_pin"].SetBool(paBoost);
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetBool(paBoost);
-
-#ifdef DEBUG
-        std::cout << "pa_boost_pin: " << spiSetter.GetBool() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("pa_boost_pin", spiSetter,
-                                   conf.GetAllocator());
-    }
-
-    saveJSON();
+    setJSON("pa_boost_pin",
+            paBoost == true ? std::string("true") : std::string("false"),
+            TYPES::BOOL);
 }
 
-void JSON::setMode(std::string mode) {
-    if (conf.HasMember("mode")) {
-        if (conf["mode"].IsString()) {
-            conf["mode"].SetString(mode.c_str(), conf.GetAllocator());
-        }
-    } else {
-        rapidjson::Value spiSetter;
-        spiSetter.SetString(mode.c_str(), conf.GetAllocator());
-
-#ifdef DEBUG
-        std::cout << "mode: " << spiSetter.GetString() << std::endl;
-#endif // DEBUG
-
-        conf.GetObject().AddMember("mode", spiSetter, conf.GetAllocator());
-    }
-
-    saveJSON();
-}
+void JSON::setMode(std::string mode) { setJSON("mode", mode, TYPES::STRING); }
 
 bool JSON::hasSPI() { return conf.HasMember("spi"); }
 
@@ -520,6 +381,8 @@ void JSON::saveJSON() {
     std::fstream output;
 
     conf.Accept(writer);
+
+    QMutexLocker lockerFile(&mutexFile);
 
     try {
 #ifdef DEBUG

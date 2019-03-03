@@ -19,9 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include <QMutex>
 #include <fstream>
 #include <iostream>
-#include <type_traits>
 
 class JSON {
   public:
@@ -29,13 +29,18 @@ class JSON {
     ~JSON();
 
   private:
-    std::string config;
     std::string path;
     rapidjson::Document conf;
 
+    // Threadlocker
+    QMutex mutexConf;
+    QMutex mutexFile;
+
+  private:
     enum TYPES { STRING, INT, INT64, FLOAT, BOOL };
 
-    void commentRemover();
+  private:
+    std::string commentRemover(std::string);
 
   public:
     bool setPath(std::string fpath);
@@ -45,6 +50,7 @@ class JSON {
     bool open(const char *fpath);
 
     std::string getConfig();
+    void parseConfig(std::string cnf);
 
     // Getter functions
 
@@ -62,6 +68,8 @@ class JSON {
     std::string getMode();
 
     // Setter functions
+
+    void setJSON(const char *key, std::string value, TYPES type);
 
     void setSPI(int spi);
     void setSPI_frequency(long int frequency);
