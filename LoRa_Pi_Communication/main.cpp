@@ -82,7 +82,14 @@ int main(void) {
     }
 
     //Loading user_config
-    user_config.open(USER_CONFIG_PATH);
+    try {
+        user_config.open(USER_CONFIG_PATH);
+    } catch (JSON::configuration_empty &e) {
+        qInfo("user_config: user_config is empty");
+    } catch (JSON::configuration_nonexistent &e) {
+        qInfo("user_config: user_config is nonexistent");
+    }
+
 
 
 
