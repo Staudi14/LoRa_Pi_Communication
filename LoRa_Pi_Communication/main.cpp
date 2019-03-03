@@ -40,7 +40,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using namespace std;
 
 // Initializer
-void initLoRa(JSON &config, JSON &user_config);
+void initLoRa(JSON::JSON &config, JSON::JSON &user_config);
 
 // Signal handlers
 void handlerSIGTERM(int signum);
@@ -48,8 +48,8 @@ void handlerSIGABRT(int signum);
 void handlerSIGINT(int signum);
 
 int main(void) {
-    JSON config;
-    JSON user_config;
+    JSON::JSON config;
+    JSON::JSON user_config;
 
     // Registrate signal handler
     std::signal(SIGTERM, handlerSIGTERM);
@@ -64,18 +64,10 @@ int main(void) {
         abort();
     }
 
-#ifdef DEBUG
-    std::cout << "Before File opening" << std::endl;
-#endif
+    //Loading config
+    try {
+        config.open(CONFIG_PATH);
 
-    // Check if config.json is found
-    if (!config.open(CONFIG_PATH)) {
-#ifdef DEBUG
-        cout << "config.json could not be found." << endl;
-#endif
-        qFatal("file not found: config.json could not be found");
-    } else // Check if config.json contains everything
-    {
         if ((!config.hasSPI()) || (!config.hasSPI_frequency()) ||
             (!config.hasSS()) || (!config.hasReset()) || (!config.hasDIO0()) ||
             (!config.hasFrequency()) || (!config.hasPower()) ||
@@ -83,21 +75,29 @@ int main(void) {
             (!config.hasMode())) {
             qFatal("config: Config is damaged, settings are missing");
         }
+    } catch (JSON::configuration_empty &e) {
+        qFatal("config: Config is empty");
+    } catch (JSON::configuration_nonexistent &e) {
+        qFatal("config: Config is nonexisting");
     }
 
-    /*
-          //Testing JSON.h
-          cout << "spi: " << config.getSPI() << endl;
-          cout << "spi_frequency: " << config.getSPI_frequency() << endl;
-          cout << "ss_pin: " << config.getSS_pin() << endl;
-          cout << "reset_pin: " << config.getResetPin() << endl;
-          cout << "dio0_pin: " << config.getDIO0_pin() << endl;
-          cout << "frequency: " << config.getFrequency() << endl;
-          cout << "power: " << config.getPower() << endl;
-          cout << "rfo_pin: " << config.getRFO_pin() << endl;
-          cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
-          cout << "mode: " << config.getMode() << endl;
-  */
+    //Loading user_config
+    user_config.open(USER_CONFIG_PATH);
+
+
+
+
+    // Testing JSON.h
+    cout << "spi: " << config.getSPI() << endl;
+    cout << "spi_frequency: " << config.getSPI_frequency() << endl;
+    cout << "ss_pin: " << config.getSS_pin() << endl;
+    cout << "reset_pin: " << config.getResetPin() << endl;
+    cout << "dio0_pin: " << config.getDIO0_pin() << endl;
+    cout << "frequency: " << config.getFrequency() << endl;
+    cout << "power: " << config.getPower() << endl;
+    cout << "rfo_pin: " << config.getRFO_pin() << endl;
+    cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
+    cout << "mode: " << config.getMode() << endl;
 
     initLoRa(config, user_config);
     qInfo("config: Config was loaded succesfully");
@@ -142,7 +142,7 @@ int main(void) {
     return 0;
 }
 
-void initLoRa(JSON &config, JSON &user_config) {
+void initLoRa(JSON::JSON &config, JSON::JSON &user_config) {
     if (user_config.open(USER_CONFIG_PATH)) // Checks if user_config exists
     {
         // Setting up SPI

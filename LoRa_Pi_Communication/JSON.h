@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <fstream>
 #include <iostream>
 
+namespace JSON {
 class JSON {
   public:
     JSON();
@@ -98,3 +99,27 @@ class JSON {
     // Saving
     void saveJSON();
 };
+
+class configuration_empty : public std::exception {
+
+  public:
+    configuration_empty(const char *msg_what) { msg.assign(msg_what); }
+
+    virtual const char *what() const throw() { return msg.c_str(); }
+
+  private:
+    std::string msg;
+};
+
+class configuration_nonexistent : public std::exception {
+
+  public:
+    configuration_nonexistent(const char *msg_what) { msg.assign(msg_what); }
+
+    virtual const char *what() const throw() { return msg.c_str(); }
+
+  private:
+    std::string msg;
+};
+
+}; // namespace JSON

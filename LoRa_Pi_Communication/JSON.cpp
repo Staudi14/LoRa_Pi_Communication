@@ -34,6 +34,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define DEBUG
 
+namespace JSON {
 JSON::JSON() { conf.SetObject(); }
 
 JSON::~JSON() {}
@@ -83,7 +84,12 @@ bool JSON::open(std::string fpath) { return open(fpath.c_str()); }
 
 bool JSON::open(const char *fpath) {
     if (setPath(fpath)) {
-        parseConfig(getConfig());
+
+        try {
+            parseConfig(getConfig());
+        } catch (std::exception e) {
+            throw;
+        }
 
         qInfo("config: %s loaded", fpath);
 
@@ -121,12 +127,12 @@ std::string JSON::getConfig() {
 
             return std::string(cnf);
         } else {
-            throw std::invalid_argument("config is empty");
+            throw configuration_empty("config is empty");
         }
 
     } else {
         qCritical("config: %s not openable", path.c_str());
-        throw std::invalid_argument("config is empty");
+        throw configuration_nonexistent("config is not openable");
     }
 }
 
@@ -317,63 +323,63 @@ void JSON::setJSON(const char *key, std::string value, TYPES type) {
     }
 }
 
-void JSON::setSPI(int spi) { setJSON("spi", std::to_string(spi), TYPES::INT); }
+void JSON::setSPI(int spi) { setJSON(JSPI, std::to_string(spi), TYPES::INT); }
 
 void JSON::setSPI_frequency(long int frequency) {
-    setJSON("spi_frequency", std::to_string(frequency), TYPES::INT64);
+    setJSON(JSPI_FREQUENCY, std::to_string(frequency), TYPES::INT64);
 }
 
 void JSON::setSS_pin(int ss) {
-    setJSON("ss_pin", std::to_string(ss), TYPES::INT);
+    setJSON(JSS_PIN, std::to_string(ss), TYPES::INT);
 }
 
 void JSON::setResetPin(int reset) {
-    setJSON("reset_pin", std::to_string(reset), TYPES::INT);
+    setJSON(JRESE_PIN, std::to_string(reset), TYPES::INT);
 }
 
 void JSON::setDIO0_pin(int dio0) {
-    setJSON("dio0_pin", std::to_string(dio0), TYPES::INT);
+    setJSON(JDIO0_PIN, std::to_string(dio0), TYPES::INT);
 }
 
 void JSON::setFrequency(long int frequency) {
-    setJSON("frequency", std::to_string(frequency), TYPES::INT);
+    setJSON(JFREQUENCY, std::to_string(frequency), TYPES::INT);
 }
 
 void JSON::setPower(int power) {
-    setJSON("power", std::to_string(power), TYPES::INT);
+    setJSON(JPOWER, std::to_string(power), TYPES::INT);
 }
 
 void JSON::setRFO_pin(int rfo) {
-    setJSON("rfo_pin", std::to_string(rfo), TYPES::INT);
+    setJSON(JRFO_PIN, std::to_string(rfo), TYPES::INT);
 }
 
 void JSON::setPAboostPin(bool paBoost) {
-    setJSON("pa_boost_pin",
+    setJSON(JPA_BOOST_PIN,
             paBoost == true ? std::string("true") : std::string("false"),
             TYPES::BOOL);
 }
 
-void JSON::setMode(std::string mode) { setJSON("mode", mode, TYPES::STRING); }
+void JSON::setMode(std::string mode) { setJSON(JMODE, mode, TYPES::STRING); }
 
-bool JSON::hasSPI() { return conf.HasMember("spi"); }
+bool JSON::hasSPI() { return conf.HasMember(JSPI); }
 
-bool JSON::hasSPI_frequency() { return conf.HasMember("spi_frequency"); }
+bool JSON::hasSPI_frequency() { return conf.HasMember(JSPI_FREQUENCY); }
 
-bool JSON::hasSS() { return conf.HasMember("ss_pin"); }
+bool JSON::hasSS() { return conf.HasMember(JSS_PIN); }
 
-bool JSON::hasReset() { return conf.HasMember("reset_pin"); }
+bool JSON::hasReset() { return conf.HasMember(JRESE_PIN); }
 
-bool JSON::hasDIO0() { return conf.HasMember("dio0_pin"); }
+bool JSON::hasDIO0() { return conf.HasMember(JDIO0_PIN); }
 
-bool JSON::hasFrequency() { return conf.HasMember("frequency"); }
+bool JSON::hasFrequency() { return conf.HasMember(JFREQUENCY); }
 
-bool JSON::hasPower() { return conf.HasMember("power"); }
+bool JSON::hasPower() { return conf.HasMember(JPOWER); }
 
-bool JSON::hasRFO() { return conf.HasMember("rfo_pin"); }
+bool JSON::hasRFO() { return conf.HasMember(JRFO_PIN); }
 
-bool JSON::hasPAboost() { return conf.HasMember("pa_boost_pin"); }
+bool JSON::hasPAboost() { return conf.HasMember(JPA_BOOST_PIN); }
 
-bool JSON::hasMode() { return conf.HasMember("mode"); }
+bool JSON::hasMode() { return conf.HasMember(JMODE); }
 
 void JSON::saveJSON() {
     rapidjson::StringBuffer buffer;
@@ -405,3 +411,5 @@ void JSON::saveJSON() {
         throw; // Pass exception to caller
     }
 }
+
+} // namespace JSON
