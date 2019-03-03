@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <QMutexLocker>
 #include <QtGlobal>
 #include <exception>
+#include <sstream>
 
 #define JSPI "spi"
 #define JSPI_FREQUENCY "spi_frequency"
@@ -127,12 +128,17 @@ std::string JSON::getConfig() {
 
             return std::string(cnf);
         } else {
-            throw configuration_empty("config is empty");
+            std::stringstream ss;
+            ss << path << " is empty";
+            throw configuration_empty(ss.str().c_str());
         }
 
     } else {
         qCritical("config: %s not openable", path.c_str());
-        throw configuration_nonexistent("config is not openable");
+
+        std::stringstream ss;
+        ss << path << " is not openable";
+        throw configuration_nonexistent(ss.str().c_str());
     }
 }
 
