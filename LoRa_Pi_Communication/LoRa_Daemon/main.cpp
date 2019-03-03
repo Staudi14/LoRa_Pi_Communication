@@ -30,10 +30,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define CONFIG_PATH                                                            \
     "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/"           \
-    "config.json"
+    "LoRa_Daemon/config.json"
 #define USER_CONFIG_PATH                                                       \
     "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/"           \
-    "user_config.json"
+    "LoRa_Daemon/user_config.json"
 #define LOG_PATH                                                               \
     "/home/pi/projects/LoRa_Pi_Communication/LoRa_Pi_Communication/log.txt"
 
@@ -90,10 +90,7 @@ int main(void) {
         qInfo("user_config: user_config is nonexistent");
     }
 
-
-
-
-
+    /*
     // Testing JSON.h
     cout << "spi: " << config.getSPI() << endl;
     cout << "spi_frequency: " << config.getSPI_frequency() << endl;
@@ -105,6 +102,7 @@ int main(void) {
     cout << "rfo_pin: " << config.getRFO_pin() << endl;
     cout << "pa_boost_pin: " << config.getPAboostPin() << endl;
     cout << "mode: " << config.getMode() << endl;
+    */
 
     initLoRa(config, user_config);
     qInfo("config: Config was loaded succesfully");
