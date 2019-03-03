@@ -216,8 +216,8 @@ int JSON::getPower() { return std::stoi(getJSON(JPOWER, TYPES::INT)); }
 
 int JSON::getRFO_pin() { return std::stoi(getJSON(JRFO_PIN, TYPES::INT)); }
 
-int JSON::getPAboostPin() {
-    return std::stoi(getJSON(JPA_BOOST_PIN, TYPES::INT));
+bool JSON::getPAboostPin() {
+    return getJSON(JPA_BOOST_PIN, TYPES::INT) == "true"? true : false;
 }
 
 std::string JSON::getMode() { return getJSON(JMODE, TYPES::STRING); }

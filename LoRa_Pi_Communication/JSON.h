@@ -65,7 +65,7 @@ class JSON {
     long int getFrequency();
     int getPower();
     int getRFO_pin();
-    int getPAboostPin();
+    bool getPAboostPin();
     std::string getMode();
 
     // Setter functions
